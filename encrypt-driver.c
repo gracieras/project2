@@ -48,14 +48,8 @@ int main(int argc, char *argv[])
         printf("output buffer needs to be greater than 1");
         exit();
     }
-
-    // int ibufferlength = 0;
-    // int ibufferreadIndex = 0;
-    // int ibufferwriteIndex = 0;
-
-    // int obufferlength = 0;
-    // int obufferreadIndex = 0;
-    // int obufferwriteIndex = 0;
+    
+    //circular buffer stuff
     uint8_t * ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
     cbuf_handle_t ime = circular_buf_init(ibuffer, ibuffersize);
 
@@ -75,8 +69,6 @@ int main(int argc, char *argv[])
 
 typedef struct circular_buf_t circular_buf_t;
 typedef circular_buf_t* cbuf_handle_t;
-
-uint8_t test;
 
 /// Pass in a storage buffer and size 
 /// Returns a circular buffer handle

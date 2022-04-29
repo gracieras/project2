@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include "encrypt-module.h"
 
-void reset_requested() {
+void reset_requested() 
+{
 	log_counts();
 }
 
-void reset_finished() {
+void reset_finished() 
+{
+	
 }
 
 int main(int argc, char *argv[]) {

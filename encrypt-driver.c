@@ -51,10 +51,16 @@ int main(int argc, char *argv[])
     
     //circular buffer stuff
     uint8_t * ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
+    
+    //input buffer
     cbuf_handle_t ime = circular_buf_init(ibuffer, ibuffersize);
 
     uint8_t * obuffer  = malloc(obuffersize * sizeof(uint8_t));
+
+    //output buffer
     cbuf_handle_t ome = circular_buf_init(obuffer, obuffersize);
+
+
 
 	char c;
 	while ((c = read_input()) != EOF) { 

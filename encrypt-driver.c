@@ -24,6 +24,7 @@ int in,out; //size of in/out buffers
 
 void reset_requested() 
 {
+    
 	log_counts();
 }
 
@@ -201,7 +202,7 @@ int main(int argc, char *argv[])
     //output buffer
     cbuf_handle_t ome = circular_buf_init(obuffer, obuffersize);
 
-
+    
 
 	char c;
 	while ((c = read_input()) != EOF) { 
@@ -262,10 +263,6 @@ void circular_buf_reset(cbuf_handle_t me);
 /// Put version 1 continues to add data if the buffer is full
 /// Old data is overwritten
 void circular_buf_put(cbuf_handle_t me, uint8_t data);
-
-/// Put Version 2 rejects new data if the buffer is full
-/// Returns 0 on success, -1 if buffer is full
-int circular_buf_put2(cbuf_handle_t me, uint8_t data);
 
 /// Retrieve a value from the buffer
 /// Returns 0 on success, -1 if the buffer is empty

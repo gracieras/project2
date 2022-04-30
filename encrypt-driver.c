@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
     else
     {
         printf("please include input file name, output name, and log filename");
-        exit();
+        exit(0);
     }
 
 	init(finput, foutput, flog); 
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
     if (ibuffersize <= 1)
     {
         printf("input buffer needs to be greater than 1");
-        exit();
+        exit(0);
     }
 
     printf("please give output buffer size.");
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     if (obuffersize <= 1)
     {
         printf("output buffer needs to be greater than 1");
-        exit();
+        exit(0);
     }
     
     //circular buffer stuff

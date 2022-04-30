@@ -22,20 +22,23 @@ int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;
 
 int in,out; //size of in/out buffers
 
-//circular buffer stuff for creating the buffer later
-uint8_t * ibuffer;
-uint8_t * obuffer;
+// //circular buffer stuff for creating the buffer later
+// uint8_t * ibuffer;
+// uint8_t * obuffer;
 
-//input buffer
-cbuf_handle_t ime;
+// //input buffer
+// cbuf_handle_t ime;
 
-//output buffer
-cbuf_handle_t ome;
+// //output buffer
+// cbuf_handle_t ome;
 
 //TODO
 void reset_requested() 
 {
-    
+    // for (int i = 0; i < sizeof(inbuffer); i++)
+    // {
+
+    // }
 	log_counts();
     reset_finished();
 }
@@ -195,29 +198,32 @@ int main(int argc, char *argv[])
 
     //prompt user for input buffer size
     printf("please give input buffer size.");
-    int ibuffersize; //max size
-    scanf("%d", &ibuffersize);
-    if (ibuffersize <= 1)
+    // int ibuffersize; //max size
+    // scanf("%d", &ibuffersize);
+    scanf("%d", &in);
+    // if (ibuffersize <= 1)
+    if (in <= 1)
     {
         printf("input buffer needs to be greater than 1");
         exit(0);
     }
 
-    ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
-    ime = circular_buf_init(ibuffer, ibuffersize); //creating input circular buffer
+    // ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
+    // ime = circular_buf_init(ibuffer, ibuffersize); //creating input circular buffer
 
     //prompt user for output buffer size
     printf("please give output buffer size.");
-    int obuffersize; //max size
-    scanf("%d", &obuffersize);
-    if (obuffersize <= 1)
+    // int obuffersize; //max size
+    // scanf("%d", &obuffersize);
+    scanf("%d", &out);
+    if (out <= 1)
     {
         printf("output buffer needs to be greater than 1");
         exit(0);
     }
 
-    obuffer  = malloc(obuffersize * sizeof(uint8_t));
-    ome = circular_buf_init(obuffer, obuffersize); //creating output circular buffer
+    // obuffer  = malloc(obuffersize * sizeof(uint8_t));
+    // ome = circular_buf_init(obuffer, obuffersize); //creating output circular buffer
 
     //creating threads
 	pthread_t reader;
@@ -262,10 +268,10 @@ int main(int argc, char *argv[])
     //freeing memory
 	free(inbuffer);
     free(outbuffer);
-    free(ibuffer);
-    free(obuffer);
-    circular_buf_free(ime);
-    circular_buf_free(ome);
+    // free(ibuffer);
+    // free(obuffer);
+    // circular_buf_free(ime);
+    // circular_buf_free(ome);
 
 }
 

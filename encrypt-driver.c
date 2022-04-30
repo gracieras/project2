@@ -2,10 +2,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include "encrypt-module.h"
 
 int *inbuffer;     //int array buffer to hold input
 int *outbuffer;    //int array buffer to hold output
+
+sem_t readsem;
+sem_t countinsem;
+sem_t encryptinsem;
+sem_t encryptoutsem;
+sem_t countoutsem;
+sem_t writesem;
+
+int resetting;
 
 //counters for read/write and counters for buffers
 int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;

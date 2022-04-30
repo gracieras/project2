@@ -22,6 +22,16 @@ int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;
 
 int in,out; //size of in/out buffers
 
+//circular buffer stuff for creating the buffer later
+uint8_t * ibuffer;
+uint8_t * obuffer;
+
+//input buffer
+cbuf_handle_t ime;
+
+//output buffer
+cbuf_handle_t ome;
+
 void reset_requested() 
 {
     
@@ -167,14 +177,14 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("please include input file name, output name, and log filename");
+        printf("please include input file name, output file name, and log file name");
         exit(0);
     }
 
 	init(finput, foutput, flog); 
 
     printf("please give input buffer size.");
-    int ibuffersize;
+    int ibuffersize; //max size
     scanf("%d", &ibuffersize);
     if (ibuffersize <= 1)
     {
@@ -182,34 +192,29 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
+    ime = circular_buf_init(ibuffer, ibuffersize);
+
     printf("please give output buffer size.");
-    int obuffersize;
+    int obuffersize; //max size
     scanf("%d", &obuffersize);
     if (obuffersize <= 1)
     {
         printf("output buffer needs to be greater than 1");
         exit(0);
     }
-    
-    //circular buffer stuff
-    uint8_t * ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
-    
-    //input buffer
-    cbuf_handle_t ime = circular_buf_init(ibuffer, ibuffersize);
 
-    uint8_t * obuffer  = malloc(obuffersize * sizeof(uint8_t));
-
-    //output buffer
-    cbuf_handle_t ome = circular_buf_init(obuffer, obuffersize);
-
-    
+    obuffer  = malloc(obuffersize * sizeof(uint8_t));
+    ome = circular_buf_init(obuffer, obuffersize);
 
 	char c;
-	while ((c = read_input()) != EOF) { 
+	while ((c = read_input()) != EOF) 
+    { 
 		count_input(c); 
 		c = encrypt(c); 
 		count_output(c); 
 		write_output(c); 
+        circular_buf_put(ime, c);
 	} 
 	printf("End of file reached.\n"); 
 	log_counts();
@@ -243,6 +248,10 @@ int main(int argc, char *argv[])
 
 	free(inbuffer);
     free(outbuffer);
+    free(ibuffer);
+    free(obuffer);
+    circular_buf_free(ime);
+    circular_buf_free(ome);
 
 }
 

@@ -218,7 +218,9 @@ int main(int argc, char *argv[])
 	pthread_t encryptor;
 	pthread_t outputCounter;
 	pthread_t writer;
+	pthread_attr_t attr;
 
+    pthread_attr_init(&attr);
 	pthread_create(&reader, &attr, &readFile, 0);
     pthread_create(&inputCounter, &attr, &countInBuffer, 0);
     pthread_create(&encryptor, &attr, &encrypt, 0);
@@ -230,6 +232,13 @@ int main(int argc, char *argv[])
     pthread_join(encryptor, NULL);
     pthread_join(outputCounter, NULL);
     pthread_join(writer, NULL);
+
+	sem_destroy(&readsem);
+    sem_destroy(&countinsem);
+    sem_destroy(&encryptinsem);
+    sem_destroy(&encryptoutsem);
+    sem_destroy(&countoutsem);
+    sem_destroy(&writesem);
 
 	free(inbuffer);
     free(outbuffer);

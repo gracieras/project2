@@ -53,7 +53,7 @@ void *readFile(void *param) {
     while ((c = read_input()) != EOF) {
 
         while(resetting == 1) {
-
+            reset_requested();
         }
         sem_wait(&readsem);        
         inbuffer[reader] = c;
@@ -73,7 +73,7 @@ void *countInBuffer(void *param) {
     while (1) {
 
         while(resetting == 1) {
-
+            reset_requested();
         }
         sem_wait(&countinsem);
 
@@ -99,7 +99,7 @@ void *encrypt(void *param) {
     while(1) {
         
         while(resetting == 1) {
-
+            reset_requested();
         }
         sem_wait(&encryptinsem);
 
@@ -127,7 +127,7 @@ void *countOutBuffer(void *param) {
     while(1) {
 
         while(resetting == 1) {
-
+            reset_requested();
         }
         sem_wait(&countoutsem);
         
@@ -151,6 +151,7 @@ void *writeFile(void *param) {
     while(1) {
 
         while(resetting == 1) {
+            reset_requested();
 
         }
         sem_wait(&writesem);
@@ -167,7 +168,7 @@ void *writeFile(void *param) {
 
 int main(int argc, char *argv[]) 
 {
-    char c;
+    //obtaining file name
     FILE *finput, *foutput, *flog;
     if (argc == 3)
     {
@@ -181,8 +182,10 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    //calling init with file names
 	init(finput, foutput, flog); 
 
+    //prompt user for input buffer size
     printf("please give input buffer size.");
     int ibuffersize; //max size
     scanf("%d", &ibuffersize);
@@ -193,8 +196,9 @@ int main(int argc, char *argv[])
     }
 
     ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
-    ime = circular_buf_init(ibuffer, ibuffersize);
+    ime = circular_buf_init(ibuffer, ibuffersize); //creating input circular buffer
 
+    //prompt user for output buffer size
     printf("please give output buffer size.");
     int obuffersize; //max size
     scanf("%d", &obuffersize);
@@ -205,20 +209,9 @@ int main(int argc, char *argv[])
     }
 
     obuffer  = malloc(obuffersize * sizeof(uint8_t));
-    ome = circular_buf_init(obuffer, obuffersize);
+    ome = circular_buf_init(obuffer, obuffersize); //creating output circular buffer
 
-	char c;
-	while ((c = read_input()) != EOF) 
-    { 
-		count_input(c); 
-		c = encrypt(c); 
-		count_output(c); 
-		write_output(c); 
-        circular_buf_put(ime, c);
-	} 
-	printf("End of file reached.\n"); 
-	log_counts();
-
+    //creating threads
 	pthread_t reader;
 	pthread_t inputCounter;
 	pthread_t encryptor;
@@ -246,6 +239,20 @@ int main(int argc, char *argv[])
     sem_destroy(&countoutsem);
     sem_destroy(&writesem);
 
+    //log character counts
+    char c;
+	while ((c = read_input()) != EOF) 
+    { 
+		count_input(c); 
+		c = encrypt(c); 
+		count_output(c); 
+		write_output(c); 
+        circular_buf_put(ime, c);
+	} 
+	printf("End of file reached.\n"); 
+	log_counts();
+
+    //freeing memory
 	free(inbuffer);
     free(outbuffer);
     free(ibuffer);

@@ -32,15 +32,17 @@ cbuf_handle_t ime;
 //output buffer
 cbuf_handle_t ome;
 
+//TODO
 void reset_requested() 
 {
     
 	log_counts();
+    reset_finished();
 }
-
+//TODO
 void reset_finished() 
 {
-	
+	resetting = 0;
 }
 
 //thread method to read each character in the input file as they buffer is ready to receive them,
@@ -54,8 +56,9 @@ void *readFile(void *param) {
 
         while(resetting == 1) {
             reset_requested();
+            //TODO have a way to set resetting to 1
         }
-        sem_wait(&readsem);        
+        sem_wait(&readsem);
         inbuffer[reader] = c;
         sem_post(&countinsem);
         reader = (reader + 1) % in;
@@ -74,13 +77,15 @@ void *countInBuffer(void *param) {
 
         while(resetting == 1) {
             reset_requested();
+            //TODO have a way to set resetting to 1
         }
         sem_wait(&countinsem);
-
+        
         if(inbuffer[incounter] == EOF) {
             sem_post(&encryptinsem);
             break;
         }
+        
         count_input(inbuffer[incounter]);
         sem_post(&encryptinsem);
         incounter = (incounter + 1) % in;
@@ -100,6 +105,7 @@ void *encrypt(void *param) {
         
         while(resetting == 1) {
             reset_requested();
+            //TODO have a way to set resetting to 1
         }
         sem_wait(&encryptinsem);
 
@@ -128,6 +134,7 @@ void *countOutBuffer(void *param) {
 
         while(resetting == 1) {
             reset_requested();
+            //TODO have a way to set resetting to 1
         }
         sem_wait(&countoutsem);
         
@@ -152,6 +159,7 @@ void *writeFile(void *param) {
 
         while(resetting == 1) {
             reset_requested();
+            //TODO have a way to set resetting to 1
 
         }
         sem_wait(&writesem);
@@ -247,7 +255,6 @@ int main(int argc, char *argv[])
 		c = encrypt(c); 
 		count_output(c); 
 		write_output(c); 
-        circular_buf_put(ime, c);
 	} 
 	printf("End of file reached.\n"); 
 	log_counts();

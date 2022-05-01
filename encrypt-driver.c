@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     }
 
     //calling init with file names
-	init(&finput, &foutput, &flog); 
+	init(finput, foutput, flog); 
 
     //prompt user for input buffer size
     printf("please give input buffer size.");

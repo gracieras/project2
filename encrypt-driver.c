@@ -307,9 +307,9 @@ int main(int argc, char *argv[])
     // free(obuffer);
     // circular_buf_free(ime);
     // circular_buf_free(ome);
-    fclose(finput);
-    fclose(foutput);
-    fclose(flog);
+    // fclose(finput);
+    // fclose(foutput);
+    // fclose(flog);
 }
 
 // typedef struct circular_buf_t circular_buf_t;

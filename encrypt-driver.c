@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "encrypt-module.h"
+#include <time.h>
+#include <stdlib.h>
 
 int *inbuffer;     //int array buffer to hold input
 int *outbuffer;    //int array buffer to hold output
@@ -35,11 +37,11 @@ int in,out; //size of in/out buffers
 //TODO
 void reset_requested() 
 {
-    for (int i = 0; i < in; i++)
+    for (int i = 0; i < get_input_total_count(); i++)
     {
         inbuffer[i] = 0;
     }
-    for (int i = 0; i < out; i++)
+    for (int i = 0; i < get_output_total_count(); i++)
     {
         outbuffer[i] = 0;
     }
@@ -60,7 +62,12 @@ void *readFile(void *param) {
     int c;
     reader = 0;
     while ((c = read_input()) != EOF) {
-
+        srand(time(0));   //random seed for this thread
+        int r = rand();
+        if (r % 2 == 0)
+        {
+            resetting = 1;
+        }
         while(resetting == 1) {
             reset_requested();
             //TODO have a way to set resetting to 1
@@ -81,7 +88,12 @@ void *countInBuffer(void *param) {
 
     incounter = 0;
     while (1) {
-
+        srand(time(0));   //random seed for this thread
+        int r = rand();
+        if (r % 2 == 0)
+        {
+            resetting = 1;
+        }
         while(resetting == 1) {
             reset_requested();
             //TODO have a way to set resetting to 1
@@ -109,7 +121,12 @@ void *encrypt(void *param) {
     encryptincounter = 0;
     encryptoutcounter = 0;
     while(1) {
-        
+        srand(time(0));   //random seed for this thread
+        int r = rand();
+        if (r % 2 == 0)
+        {
+            resetting = 1;
+        }
         while(resetting == 1) {
             reset_requested();
             //TODO have a way to set resetting to 1
@@ -138,7 +155,12 @@ void *countOutBuffer(void *param) {
 
     outcounter = 0;
     while(1) {
-
+        srand(time(0));   //random seed for this thread
+        int r = rand();
+        if (r % 2 == 0)
+        {
+            resetting = 1;
+        }
         while(resetting == 1) {
             reset_requested();
             //TODO have a way to set resetting to 1
@@ -163,7 +185,12 @@ void *writeFile(void *param) {
 
     writer = 0;
     while(1) {
-
+        srand(time(0));   //random seed for this thread
+        int r = rand();
+        if (r % 2 == 0)
+        {
+            resetting = 1;
+        }
         while(resetting == 1) {
             reset_requested();
             //TODO have a way to set resetting to 1
@@ -185,6 +212,7 @@ int main(int argc, char *argv[])
 {
     //obtaining file name
     FILE *finput, *foutput, *flog;
+    srand(time(0));   //random seed
     if (argc == 3)
     {
         finput = fopen(argv[1], "w");

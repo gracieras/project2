@@ -35,10 +35,14 @@ int in,out; //size of in/out buffers
 //TODO
 void reset_requested() 
 {
-    // for (int i = 0; i < sizeof(inbuffer); i++)
-    // {
-
-    // }
+    for (int i = 0; i < in; i++)
+    {
+        inbuffer[i] = 0;
+    }
+    for (int i = 0; i < out; i++)
+    {
+        outbuffer[i] = 0;
+    }
 	log_counts();
     reset_finished();
 }

@@ -116,7 +116,7 @@ void *countInBuffer(void *param) {
 //writes encrypted character to outbuffer and signals that character is ready to be counter
 //signals to reader that encrypted character can be overwritten through readFile()
 //signals that encrypted character is ready to be counted
-void *encrypt(void *param) {
+void *encryptFile(void *param) {
 
     encryptincounter = 0;
     encryptoutcounter = 0;
@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
     pthread_attr_init(&attr);
 	pthread_create(&reader, &attr, &readFile, 0);
     pthread_create(&inputCounter, &attr, &countInBuffer, 0);
-    pthread_create(&encryptor, &attr, &encrypt, 0);
+    pthread_create(&encryptor, &attr, &encryptFile, 0);
     pthread_create(&outputCounter, &attr, &countOutBuffer, 0);
     pthread_create(&writer, &attr, &writeFile, 0);
 

@@ -211,13 +211,16 @@ void *writeFile(void *param) {
 int main(int argc, char *argv[]) 
 {
     //obtaining file name
-    FILE *finput, *foutput, *flog;
+    char *finput, *foutput, *flog;
     srand(time(0));   //random seed
     if (argc == 3)
     {
-        finput = fopen(argv[1], "r");
-        foutput = fopen(argv[2], "r");
-        flog = fopen(argv[3], "r");
+        finput = argv[1];
+        foutput = argv[2];
+        flog = argv[3];
+        // finput = fopen(argv[1], "r");
+        // foutput = fopen(argv[2], "r");
+        // flog = fopen(argv[3], "r");
     }
     else
     {

@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     }
 
     //calling init with file names
-	init(finput, foutput, flog); 
+	init(&finput, &foutput, &flog); 
 
     //prompt user for input buffer size
     printf("please give input buffer size.");
@@ -307,183 +307,183 @@ int main(int argc, char *argv[])
 
 }
 
-typedef struct circular_buf_t circular_buf_t;
-typedef circular_buf_t* cbuf_handle_t;
+// typedef struct circular_buf_t circular_buf_t;
+// typedef circular_buf_t* cbuf_handle_t;
 
-/// Pass in a storage buffer and size 
-/// Returns a circular buffer handle
-cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
-
-/// Free a circular buffer structure.
-/// Does not free data buffer; owner is responsible for that
-void circular_buf_free(cbuf_handle_t me);
-
-/// Reset the circular buffer to empty, head == tail
-void circular_buf_reset(cbuf_handle_t me);
-
-/// Put version 1 continues to add data if the buffer is full
-/// Old data is overwritten
-void circular_buf_put(cbuf_handle_t me, uint8_t data);
-
-/// Retrieve a value from the buffer
-/// Returns 0 on success, -1 if the buffer is empty
-int circular_buf_get(cbuf_handle_t me, uint8_t * data);
-
-/// Returns true if the buffer is empty
-bool circular_buf_empty(cbuf_handle_t me);
-
-/// Returns true if the buffer is full
-bool circular_buf_full(cbuf_handle_t me);
-
-/// Returns the maximum capacity of the buffer
-size_t circular_buf_capacity(cbuf_handle_t me);
-
-/// Returns the current number of elements in the buffer
-size_t circular_buf_size(cbuf_handle_t me);
-
-// The hidden definition of our circular buffer structure
-struct circular_buf_t {
-	uint8_t * buffer;
-	size_t head;
-	size_t tail;
-	size_t max; //of the buffer
-	bool full;
-};
-
-// // User provides struct
-// void circular_buf_init(circular_buf_t* me, uint8_t* buffer, size_t size);
-
-// // Return a concrete struct
-// circular_buf_t circular_buf_init(uint8_t* buffer, size_t size);
-
-// // Return a pointer to a struct instance - preferred approach
+// /// Pass in a storage buffer and size 
+// /// Returns a circular buffer handle
 // cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
 
-cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size)
-{
-	assert(buffer && size);
+// /// Free a circular buffer structure.
+// /// Does not free data buffer; owner is responsible for that
+// void circular_buf_free(cbuf_handle_t me);
 
-	cbuf_handle_t cbuf = malloc(sizeof(circular_buf_t));
-	assert(cbuf);
+// /// Reset the circular buffer to empty, head == tail
+// void circular_buf_reset(cbuf_handle_t me);
 
-	cbuf->buffer = buffer;
-	cbuf->max = size;
-	circular_buf_reset(cbuf);
+// /// Put version 1 continues to add data if the buffer is full
+// /// Old data is overwritten
+// void circular_buf_put(cbuf_handle_t me, uint8_t data);
 
-	assert(circular_buf_empty(cbuf));
+// /// Retrieve a value from the buffer
+// /// Returns 0 on success, -1 if the buffer is empty
+// int circular_buf_get(cbuf_handle_t me, uint8_t * data);
 
-	return cbuf;
-}
+// /// Returns true if the buffer is empty
+// bool circular_buf_empty(cbuf_handle_t me);
 
-void circular_buf_reset(cbuf_handle_t me)
-{
-    assert(me);
+// /// Returns true if the buffer is full
+// bool circular_buf_full(cbuf_handle_t me);
 
-    me->head = 0;
-    me->tail = 0;
-    me->full = false;
-}
+// /// Returns the maximum capacity of the buffer
+// size_t circular_buf_capacity(cbuf_handle_t me);
 
-void circular_buf_free(cbuf_handle_t me)
-{
-	assert(me);
-	free(me);
-}
+// /// Returns the current number of elements in the buffer
+// size_t circular_buf_size(cbuf_handle_t me);
 
-bool circular_buf_full(cbuf_handle_t me)
-{
-	assert(me);
+// // The hidden definition of our circular buffer structure
+// struct circular_buf_t {
+// 	uint8_t * buffer;
+// 	size_t head;
+// 	size_t tail;
+// 	size_t max; //of the buffer
+// 	bool full;
+// };
 
-	return me->full;
-}
+// // // User provides struct
+// // void circular_buf_init(circular_buf_t* me, uint8_t* buffer, size_t size);
 
-bool circular_buf_empty(cbuf_handle_t me)
-{
-	assert(me);
+// // // Return a concrete struct
+// // circular_buf_t circular_buf_init(uint8_t* buffer, size_t size);
 
-	return (!me->full && (me->head == me->tail));
-}
+// // // Return a pointer to a struct instance - preferred approach
+// // cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
 
-size_t circular_buf_capacity(cbuf_handle_t me)
-{
-	assert(me);
+// cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size)
+// {
+// 	assert(buffer && size);
 
-	return me->max;
-}
+// 	cbuf_handle_t cbuf = malloc(sizeof(circular_buf_t));
+// 	assert(cbuf);
 
-size_t circular_buf_size(cbuf_handle_t me)
-{
-	assert(me);
+// 	cbuf->buffer = buffer;
+// 	cbuf->max = size;
+// 	circular_buf_reset(cbuf);
 
-	size_t size = me->max;
+// 	assert(circular_buf_empty(cbuf));
 
-	if(!me->full)
-	{
-		if(me->head >= me->tail)
-		{
-			size = (me->head - me->tail);
-		}
-		else
-		{
-			size = (me->max + me->head - me->tail);
-		}
-	}
+// 	return cbuf;
+// }
 
-	return size;
-}
+// void circular_buf_reset(cbuf_handle_t me)
+// {
+//     assert(me);
 
-static void advance_pointer(cbuf_handle_t me)
-{
-	assert(me);
+//     me->head = 0;
+//     me->tail = 0;
+//     me->full = false;
+// }
 
-	if(me->full)
-   	{
-		if (++(me->tail) == me->max) 
-		{ 
-			me->tail = 0;
-		}
-	}
+// void circular_buf_free(cbuf_handle_t me)
+// {
+// 	assert(me);
+// 	free(me);
+// }
 
-	if (++(me->head) == me->max) 
-	{ 
-		me->head = 0;
-	}
-	me->full = (me->head == me->tail);
-}
+// bool circular_buf_full(cbuf_handle_t me)
+// {
+// 	assert(me);
 
-static void retreat_pointer(cbuf_handle_t me)
-{
-	assert(me);
+// 	return me->full;
+// }
 
-	me->full = false;
-	if (++(me->tail) == me->max) 
-	{ 
-		me->tail = 0;
-	}
-}
+// bool circular_buf_empty(cbuf_handle_t me)
+// {
+// 	assert(me);
 
-void circular_buf_put(cbuf_handle_t me, uint8_t data)
-{
-	assert(me && me->buffer);
+// 	return (!me->full && (me->head == me->tail));
+// }
 
-    me->buffer[me->head] = data;
+// size_t circular_buf_capacity(cbuf_handle_t me)
+// {
+// 	assert(me);
 
-    advance_pointer(me);
-}
+// 	return me->max;
+// }
 
-int circular_buf_get(cbuf_handle_t me, uint8_t * data)
-{
-    assert(me && data && me->buffer);
+// size_t circular_buf_size(cbuf_handle_t me)
+// {
+// 	assert(me);
 
-    int r = -1;
+// 	size_t size = me->max;
 
-    if(!circular_buf_empty(me))
-    {
-        *data = me->buffer[me->tail];
-        retreat_pointer(me);
+// 	if(!me->full)
+// 	{
+// 		if(me->head >= me->tail)
+// 		{
+// 			size = (me->head - me->tail);
+// 		}
+// 		else
+// 		{
+// 			size = (me->max + me->head - me->tail);
+// 		}
+// 	}
 
-        r = 0;
-    }
+// 	return size;
+// }
 
-    return r;
-}
+// static void advance_pointer(cbuf_handle_t me)
+// {
+// 	assert(me);
+
+// 	if(me->full)
+//    	{
+// 		if (++(me->tail) == me->max) 
+// 		{ 
+// 			me->tail = 0;
+// 		}
+// 	}
+
+// 	if (++(me->head) == me->max) 
+// 	{ 
+// 		me->head = 0;
+// 	}
+// 	me->full = (me->head == me->tail);
+// }
+
+// static void retreat_pointer(cbuf_handle_t me)
+// {
+// 	assert(me);
+
+// 	me->full = false;
+// 	if (++(me->tail) == me->max) 
+// 	{ 
+// 		me->tail = 0;
+// 	}
+// }
+
+// void circular_buf_put(cbuf_handle_t me, uint8_t data)
+// {
+// 	assert(me && me->buffer);
+
+//     me->buffer[me->head] = data;
+
+//     advance_pointer(me);
+// }
+
+// int circular_buf_get(cbuf_handle_t me, uint8_t * data)
+// {
+//     assert(me && data && me->buffer);
+
+//     int r = -1;
+
+//     if(!circular_buf_empty(me))
+//     {
+//         *data = me->buffer[me->tail];
+//         retreat_pointer(me);
+
+//         r = 0;
+//     }
+
+//     return r;
+// }

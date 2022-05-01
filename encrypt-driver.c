@@ -139,7 +139,7 @@ void *encryptFile(void *param) {
             break;
         }
         sem_wait(&encryptoutsem);
-        outbuffer[encryptoutcounter] = caesar_encrypt(inbuffer[encryptincounter]);
+        outbuffer[encryptoutcounter] = encrypt(inbuffer[encryptincounter]);
         sem_post(&readsem);
         sem_post(&countoutsem);
 

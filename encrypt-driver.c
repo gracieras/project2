@@ -215,9 +215,9 @@ int main(int argc, char *argv[])
     srand(time(0));   //random seed
     if (argc == 3)
     {
-        finput = fopen(argv[1], "w");
-        foutput = fopen(argv[2], "w");
-        flog = fopen(argv[3], "w");
+        finput = fopen(argv[1], "r");
+        foutput = fopen(argv[2], "r");
+        flog = fopen(argv[3], "r");
     }
     else
     {
@@ -304,7 +304,9 @@ int main(int argc, char *argv[])
     // free(obuffer);
     // circular_buf_free(ime);
     // circular_buf_free(ome);
-
+    fclose(finput);
+    fclose(foutput);
+    fclose(flog);
 }
 
 // typedef struct circular_buf_t circular_buf_t;

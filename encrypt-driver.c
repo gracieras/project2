@@ -17,6 +17,8 @@ sem_t encryptoutsem;
 sem_t countoutsem;
 sem_t writesem;
 
+sem_t *resetDone;
+
 int resetting;
 
 //counters for read/write and counters for buffers
@@ -37,14 +39,8 @@ int in,out; //size of in/out buffers
 
 void reset_requested() 
 {
-    for (int i = 0; i < in - 1; i++)
-    {
-        inbuffer[i] = 0;
-    }
-    for (int i = 0; i < out - 1; i++)
-    {
-        outbuffer[i] = 0;
-    }
+    resetting = 1;
+    sem_wait(resetDone);
 	log_counts();
     reset_finished();
 }
@@ -52,6 +48,7 @@ void reset_requested()
 void reset_finished() 
 {
 	resetting = 0;
+    sem_post(read_input);
 }
 
 //thread method to read each character in the input file as they buffer is ready to receive them,
@@ -238,7 +235,7 @@ int main(int argc, char *argv[])
     char *finput, *foutput, *flog;
 
     //obtaining file name
-    if (argc == 3)
+    if (argc == 4)
     {
         finput = argv[1];
         foutput = argv[2];
@@ -251,7 +248,7 @@ int main(int argc, char *argv[])
     }
 
     //calling init with file names
-	init(finput, foutput, flog); 
+	init(finput, foutput, flog);
 
     //prompt user for input buffer size
     printf("please give input buffer size.");
@@ -262,10 +259,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-
-    // ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
-    // ime = circular_buf_init(ibuffer, ibuffersize); //creating input circular buffer
-
     //prompt user for output buffer size
     printf("please give output buffer size.");
     scanf("%d", &out);
@@ -275,8 +268,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    // obuffer  = malloc(obuffersize * sizeof(uint8_t));
-    // ome = circular_buf_init(obuffer, obuffersize); //creating output circular buffer
+    inbuffer = malloc(sizeof(char) * in);
+    outbuffer = malloc(sizeof(char) * out);
 
     //creating threads
 	pthread_t reader;
@@ -285,6 +278,8 @@ int main(int argc, char *argv[])
 	pthread_t outputCounter;
 	pthread_t writer;
 	pthread_attr_t attr;
+
+    // sem_init()
 
     pthread_attr_init(&attr);
 	pthread_create(&reader, &attr, &readFile, 0);

@@ -271,6 +271,14 @@ int main(int argc, char *argv[])
     inbuffer = malloc(sizeof(char) * in);
     outbuffer = malloc(sizeof(char) * out);
 
+    reader = 0;
+    incounter = 0;
+    encryptincounter = 0;
+    encryptoutcounter = 0;
+    outcounter = 0;
+    writer = 0;
+    resetting = 0;
+
     //creating threads
 	pthread_t reader;
 	pthread_t inputCounter;

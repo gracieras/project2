@@ -26,17 +26,6 @@ int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;
 
 int in,out; //size of in/out buffers
 
-// removed
-// //circular buffer stuff for creating the buffer later
-// uint8_t *ibuffer;
-// uint8_t *obuffer;
-
-// //input buffer
-// cbuf ime;
-
-// //output buffer
-// cbuf ome;
-
 void reset_requested() 
 {
     resetting = 1;
@@ -250,15 +239,15 @@ int main(int argc, char *argv[])
     sem_destroy(&writesem);
 
     //log character counts
-    char c;
-	while ((c = read_input()) != EOF) 
-    { 
-		count_input(c); 
-		c = encrypt(c); 
-		count_output(c); 
-		write_output(c); 
-	} 
-	printf("End of file reached.\n"); 
+    // char c;
+	// while ((c = read_input()) != EOF) 
+    // { 
+	// 	count_input(c); 
+	// 	c = encrypt(c); 
+	// 	count_output(c); 
+	// 	write_output(c); 
+	// } 
+	// printf("End of file reached.\n"); 
 	log_counts();
 
     //freeing memory

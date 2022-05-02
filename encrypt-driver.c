@@ -10,14 +10,14 @@
 int *inbuffer;     //int array buffer to hold input
 int *outbuffer;    //int array buffer to hold output
 
-sem_t readsem;
-sem_t countinsem;
 sem_t encryptinsem;
 sem_t encryptoutsem;
+sem_t countinsem;
 sem_t countoutsem;
+sem_t readsem;
 sem_t writesem;
 
-sem_t *resetDone;
+// sem_t *resetDone;
 
 int resetting;
 
@@ -40,7 +40,7 @@ int in,out; //size of in/out buffers
 void reset_requested() 
 {
     resetting = 1;
-    sem_wait(resetDone);
+    // sem_wait(resetDone);
 	log_counts();
     reset_finished();
 }

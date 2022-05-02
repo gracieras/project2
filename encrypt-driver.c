@@ -24,17 +24,17 @@ int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;
 
 int in,out; //size of in/out buffers
 
+// removed
 // //circular buffer stuff for creating the buffer later
-// uint8_t * ibuffer;
-// uint8_t * obuffer;
+// uint8_t *ibuffer;
+// uint8_t *obuffer;
 
 // //input buffer
-// cbuf_handle_t ime;
+// cbuf ime;
 
 // //output buffer
-// cbuf_handle_t ome;
+// cbuf ome;
 
-//TODO
 void reset_requested() 
 {
     for (int i = 0; i < get_input_total_count(); i++)
@@ -48,7 +48,7 @@ void reset_requested()
 	log_counts();
     reset_finished();
 }
-//TODO
+
 void reset_finished() 
 {
 	resetting = 0;
@@ -64,13 +64,18 @@ void *readFile(void *param) {
     while ((c = read_input()) != EOF) {
         srand(time(0));   //random seed for this thread
         int r = rand();
+        int count = 0;
         if (r % 2 == 0)
         {
+            count++;
+        }
+        if (count == 5)
+        {
             resetting = 1;
+            count = 0;
         }
         while(resetting == 1) {
             reset_requested();
-            //TODO have a way to set resetting to 1
         }
         sem_wait(&readsem);
         inbuffer[reader] = c;
@@ -90,13 +95,18 @@ void *countInBuffer(void *param) {
     while (1) {
         srand(time(0));   //random seed for this thread
         int r = rand();
+        int count = 0;
         if (r % 2 == 0)
         {
+            count++;
+        }
+        if (count == 5)
+        {
             resetting = 1;
+            count = 0;
         }
         while(resetting == 1) {
             reset_requested();
-            //TODO have a way to set resetting to 1
         }
         sem_wait(&countinsem);
         
@@ -123,13 +133,18 @@ void *encryptFile(void *param) {
     while(1) {
         srand(time(0));   //random seed for this thread
         int r = rand();
+        int count = 0;
         if (r % 2 == 0)
         {
+            count++;
+        }
+        if (count == 5)
+        {
             resetting = 1;
+            count = 0;
         }
         while(resetting == 1) {
             reset_requested();
-            //TODO have a way to set resetting to 1
         }
         sem_wait(&encryptinsem);
 
@@ -157,13 +172,18 @@ void *countOutBuffer(void *param) {
     while(1) {
         srand(time(0));   //random seed for this thread
         int r = rand();
+        int count = 0;
         if (r % 2 == 0)
         {
+            count++;
+        }
+        if (count == 5)
+        {
             resetting = 1;
+            count = 0;
         }
         while(resetting == 1) {
             reset_requested();
-            //TODO have a way to set resetting to 1
         }
         sem_wait(&countoutsem);
         
@@ -187,13 +207,18 @@ void *writeFile(void *param) {
     while(1) {
         srand(time(0));   //random seed for this thread
         int r = rand();
+        int count = 0;
         if (r % 2 == 0)
         {
+            count++;
+        }
+        if (count == 5)
+        {
             resetting = 1;
+            count = 0;
         }
         while(resetting == 1) {
             reset_requested();
-            //TODO have a way to set resetting to 1
 
         }
         sem_wait(&writesem);
@@ -210,17 +235,14 @@ void *writeFile(void *param) {
 
 int main(int argc, char *argv[]) 
 {
-    //obtaining file name
     char *finput, *foutput, *flog;
-    srand(time(0));   //random seed
+
+    //obtaining file name
     if (argc == 3)
     {
         finput = argv[1];
         foutput = argv[2];
         flog = argv[3];
-        // finput = fopen(argv[1], "r");
-        // foutput = fopen(argv[2], "r");
-        // flog = fopen(argv[3], "r");
     }
     else
     {
@@ -233,23 +255,19 @@ int main(int argc, char *argv[])
 
     //prompt user for input buffer size
     printf("please give input buffer size.");
-    // int ibuffersize; //max size
-    // scanf("%d", &ibuffersize);
     scanf("%d", &in);
-    // if (ibuffersize <= 1)
     if (in <= 1)
     {
         printf("input buffer needs to be greater than 1");
         exit(0);
     }
 
+
     // ibuffer  = malloc(ibuffersize * sizeof(uint8_t));
     // ime = circular_buf_init(ibuffer, ibuffersize); //creating input circular buffer
 
     //prompt user for output buffer size
     printf("please give output buffer size.");
-    // int obuffersize; //max size
-    // scanf("%d", &obuffersize);
     scanf("%d", &out);
     if (out <= 1)
     {
@@ -303,192 +321,4 @@ int main(int argc, char *argv[])
     //freeing memory
 	free(inbuffer);
     free(outbuffer);
-    // free(ibuffer);
-    // free(obuffer);
-    // circular_buf_free(ime);
-    // circular_buf_free(ome);
-    // fclose(finput);
-    // fclose(foutput);
-    // fclose(flog);
 }
-
-// typedef struct circular_buf_t circular_buf_t;
-// typedef circular_buf_t* cbuf_handle_t;
-
-// /// Pass in a storage buffer and size 
-// /// Returns a circular buffer handle
-// cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
-
-// /// Free a circular buffer structure.
-// /// Does not free data buffer; owner is responsible for that
-// void circular_buf_free(cbuf_handle_t me);
-
-// /// Reset the circular buffer to empty, head == tail
-// void circular_buf_reset(cbuf_handle_t me);
-
-// /// Put version 1 continues to add data if the buffer is full
-// /// Old data is overwritten
-// void circular_buf_put(cbuf_handle_t me, uint8_t data);
-
-// /// Retrieve a value from the buffer
-// /// Returns 0 on success, -1 if the buffer is empty
-// int circular_buf_get(cbuf_handle_t me, uint8_t * data);
-
-// /// Returns true if the buffer is empty
-// bool circular_buf_empty(cbuf_handle_t me);
-
-// /// Returns true if the buffer is full
-// bool circular_buf_full(cbuf_handle_t me);
-
-// /// Returns the maximum capacity of the buffer
-// size_t circular_buf_capacity(cbuf_handle_t me);
-
-// /// Returns the current number of elements in the buffer
-// size_t circular_buf_size(cbuf_handle_t me);
-
-// // The hidden definition of our circular buffer structure
-// struct circular_buf_t {
-// 	uint8_t * buffer;
-// 	size_t head;
-// 	size_t tail;
-// 	size_t max; //of the buffer
-// 	bool full;
-// };
-
-// // // User provides struct
-// // void circular_buf_init(circular_buf_t* me, uint8_t* buffer, size_t size);
-
-// // // Return a concrete struct
-// // circular_buf_t circular_buf_init(uint8_t* buffer, size_t size);
-
-// // // Return a pointer to a struct instance - preferred approach
-// // cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
-
-// cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size)
-// {
-// 	assert(buffer && size);
-
-// 	cbuf_handle_t cbuf = malloc(sizeof(circular_buf_t));
-// 	assert(cbuf);
-
-// 	cbuf->buffer = buffer;
-// 	cbuf->max = size;
-// 	circular_buf_reset(cbuf);
-
-// 	assert(circular_buf_empty(cbuf));
-
-// 	return cbuf;
-// }
-
-// void circular_buf_reset(cbuf_handle_t me)
-// {
-//     assert(me);
-
-//     me->head = 0;
-//     me->tail = 0;
-//     me->full = false;
-// }
-
-// void circular_buf_free(cbuf_handle_t me)
-// {
-// 	assert(me);
-// 	free(me);
-// }
-
-// bool circular_buf_full(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	return me->full;
-// }
-
-// bool circular_buf_empty(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	return (!me->full && (me->head == me->tail));
-// }
-
-// size_t circular_buf_capacity(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	return me->max;
-// }
-
-// size_t circular_buf_size(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	size_t size = me->max;
-
-// 	if(!me->full)
-// 	{
-// 		if(me->head >= me->tail)
-// 		{
-// 			size = (me->head - me->tail);
-// 		}
-// 		else
-// 		{
-// 			size = (me->max + me->head - me->tail);
-// 		}
-// 	}
-
-// 	return size;
-// }
-
-// static void advance_pointer(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	if(me->full)
-//    	{
-// 		if (++(me->tail) == me->max) 
-// 		{ 
-// 			me->tail = 0;
-// 		}
-// 	}
-
-// 	if (++(me->head) == me->max) 
-// 	{ 
-// 		me->head = 0;
-// 	}
-// 	me->full = (me->head == me->tail);
-// }
-
-// static void retreat_pointer(cbuf_handle_t me)
-// {
-// 	assert(me);
-
-// 	me->full = false;
-// 	if (++(me->tail) == me->max) 
-// 	{ 
-// 		me->tail = 0;
-// 	}
-// }
-
-// void circular_buf_put(cbuf_handle_t me, uint8_t data)
-// {
-// 	assert(me && me->buffer);
-
-//     me->buffer[me->head] = data;
-
-//     advance_pointer(me);
-// }
-
-// int circular_buf_get(cbuf_handle_t me, uint8_t * data)
-// {
-//     assert(me && data && me->buffer);
-
-//     int r = -1;
-
-//     if(!circular_buf_empty(me))
-//     {
-//         *data = me->buffer[me->tail];
-//         retreat_pointer(me);
-
-//         r = 0;
-//     }
-
-//     return r;
-// }

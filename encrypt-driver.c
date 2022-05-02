@@ -59,18 +59,6 @@ void *readFile(void *param) {
     int c;
     reader = 0;
     while ((c = read_input()) != EOF) {
-        srand(time(0));   //random seed for this thread
-        int r = rand();
-        int count = 0;
-        if (r % 2 == 0)
-        {
-            count++;
-        }
-        if (count == 5)
-        {
-            resetting = 1;
-            count = 0;
-        }
         while(resetting == 1) {
             reset_requested();
         }
@@ -90,18 +78,6 @@ void *countInBuffer(void *param) {
 
     incounter = 0;
     while (1) {
-        srand(time(0));   //random seed for this thread
-        int r = rand();
-        int count = 0;
-        if (r % 2 == 0)
-        {
-            count++;
-        }
-        if (count == 5)
-        {
-            resetting = 1;
-            count = 0;
-        }
         while(resetting == 1) {
             reset_requested();
         }
@@ -128,18 +104,6 @@ void *encryptFile(void *param) {
     encryptincounter = 0;
     encryptoutcounter = 0;
     while(1) {
-        srand(time(0));   //random seed for this thread
-        int r = rand();
-        int count = 0;
-        if (r % 2 == 0)
-        {
-            count++;
-        }
-        if (count == 5)
-        {
-            resetting = 1;
-            count = 0;
-        }
         while(resetting == 1) {
             reset_requested();
         }
@@ -167,18 +131,6 @@ void *countOutBuffer(void *param) {
 
     outcounter = 0;
     while(1) {
-        srand(time(0));   //random seed for this thread
-        int r = rand();
-        int count = 0;
-        if (r % 2 == 0)
-        {
-            count++;
-        }
-        if (count == 5)
-        {
-            resetting = 1;
-            count = 0;
-        }
         while(resetting == 1) {
             reset_requested();
         }
@@ -202,18 +154,6 @@ void *writeFile(void *param) {
 
     writer = 0;
     while(1) {
-        srand(time(0));   //random seed for this thread
-        int r = rand();
-        int count = 0;
-        if (r % 2 == 0)
-        {
-            count++;
-        }
-        if (count == 5)
-        {
-            resetting = 1;
-            count = 0;
-        }
         while(resetting == 1) {
             reset_requested();
 

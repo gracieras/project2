@@ -17,8 +17,6 @@ sem_t countoutsem;
 sem_t readsem;
 sem_t writesem;
 
-// sem_t *resetDone;
-
 int resetting;
 
 //counters for read/write and counters for buffers
@@ -29,7 +27,8 @@ int in,out; //size of in/out buffers
 void reset_requested() 
 {
     resetting = 1;
-    // sem_wait(resetDone);
+    sem_wait(&countinsem);
+    sem_wait(&countoutsem);
 	log_counts();
     reset_finished();
 }
@@ -37,7 +36,8 @@ void reset_requested()
 void reset_finished() 
 {
 	resetting = 0;
-    sem_post(read_input);
+    sem_post(&countinsem);
+    sem_post(&countoutsem);
 }
 
 //thread method to read each character in the input file as they buffer is ready to receive them,
@@ -217,6 +217,19 @@ int main(int argc, char *argv[])
 	pthread_attr_t attr;
 
     // sem_init()
+    // sem_t encryptinsem;
+    // sem_t encryptoutsem;
+    // sem_t countinsem;
+    // sem_t countoutsem;
+    // sem_t readsem;
+    // sem_t writesem;
+
+    sem_init(&encryptinsem, 0, 0);
+    sem_init(&encryptoutsem, 0, 0);
+    sem_init(&countinsem, 0, 0);
+    sem_init(&countoutsem, 0, 0);
+    sem_init(&readsem, 0, 0);
+    sem_init(&writesem, 0, 0);
 
     pthread_attr_init(&attr);
 	pthread_create(&reader, &attr, &readFile, 0);

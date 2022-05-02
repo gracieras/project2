@@ -37,11 +37,11 @@ int in,out; //size of in/out buffers
 
 void reset_requested() 
 {
-    for (int i = 0; i < in; i++)
+    for (int i = 0; i < in - 1; i++)
     {
         inbuffer[i] = 0;
     }
-    for (int i = 0; i < out; i++)
+    for (int i = 0; i < out - 1; i++)
     {
         outbuffer[i] = 0;
     }

@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
 
     //initialize semaphores
     sem_init(&encryptinsem, 0, 0);
-    sem_init(&encryptoutsem, 0, 01;
+    sem_init(&encryptoutsem, 0, 1);
     sem_init(&countinsem, 0, 0);
     sem_init(&countoutsem, 0, 0);
     sem_init(&readsem, 0, in);
@@ -265,8 +265,8 @@ int main(int argc, char *argv[])
 	// } 
 	
 	log_counts();
-    printf("End of file reached.\n"); 
-    
+    printf("End of file reached."); 
+
     //freeing memory
 	free(inbuffer);
     free(outbuffer);

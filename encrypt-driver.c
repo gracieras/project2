@@ -30,6 +30,13 @@ void reset_requested()
     sem_wait(&countinsem);
     sem_wait(&countoutsem);
 	log_counts();
+    printf("reset requested test");
+
+    printf("Total input count with the current key is %d\n", get_input_total_count());
+    printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_input_count('a'), get_input_count('b'), get_input_count('c'), get_input_count('d'), get_input_count('e'), get_input_count('f'), get_input_count('g'), get_input_count('h'), get_input_count('i'), get_input_count('j'), get_input_count('k'), get_input_count('l'), get_input_count('m'), get_input_count('n'), get_input_count('o'), get_input_count('p'), get_input_count('q'), get_input_count('r'), get_input_count('s'), get_input_count('t'), get_input_count('u'), get_input_count('v'), get_input_count('w'), get_input_count('x'), get_input_count('y'), get_input_count('z'));
+    printf("Total output count with the current key is %d\n", get_output_total_count());
+    printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_output_count('a'), get_output_count('b'), get_output_count('c'), get_output_count('d'), get_output_count('e'), get_output_count('f'), get_output_count('g'), get_output_count('h'), get_output_count('i'), get_output_count('j'), get_output_count('k'), get_output_count('l'), get_output_count('m'), get_output_count('n'), get_output_count('o'), get_output_count('p'), get_output_count('q'), get_output_count('r'), get_output_count('s'), get_output_count('t'), get_output_count('u'), get_output_count('v'), get_output_count('w'), get_output_count('x'), get_output_count('y'), get_output_count('z'));
+    
     reset_finished();
 }
 
@@ -180,7 +187,7 @@ int main(int argc, char *argv[])
 	init(finput, foutput, flog);
 
     //prompt user for input buffer size
-    printf("please give input buffer size.");
+    printf("please give input buffer size.\n");
     scanf("%d", &in);
     if (in <= 1)
     {
@@ -189,7 +196,7 @@ int main(int argc, char *argv[])
     }
 
     //prompt user for output buffer size
-    printf("please give output buffer size.");
+    printf("please give output buffer size.\n");
     scanf("%d", &out);
     if (out <= 1)
     {

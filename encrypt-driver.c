@@ -4,6 +4,9 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "encrypt-module.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
 
@@ -215,6 +218,14 @@ int main(int argc, char *argv[])
     writer = 0;
     resetting = 0;
 
+    //initialize semaphores
+    sem_init(&encryptinsem, 0, 0);
+    sem_init(&encryptoutsem, 0, 01;
+    sem_init(&countinsem, 0, 0);
+    sem_init(&countoutsem, 0, 0);
+    sem_init(&readsem, 0, in);
+    sem_init(&writesem, 0, 0);
+
     //creating threads
 	pthread_t reader;
 	pthread_t inputCounter;
@@ -222,21 +233,6 @@ int main(int argc, char *argv[])
 	pthread_t outputCounter;
 	pthread_t writer;
 	pthread_attr_t attr;
-
-    // sem_init()
-    // sem_t encryptinsem;
-    // sem_t encryptoutsem;
-    // sem_t countinsem;
-    // sem_t countoutsem;
-    // sem_t readsem;
-    // sem_t writesem;
-
-    sem_init(&encryptinsem, 0, 0);
-    sem_init(&encryptoutsem, 0, 0);
-    sem_init(&countinsem, 0, 0);
-    sem_init(&countoutsem, 0, 0);
-    sem_init(&readsem, 0, 0);
-    sem_init(&writesem, 0, 0);
 
     pthread_attr_init(&attr);
 	pthread_create(&reader, &attr, &readFile, 0);
@@ -267,9 +263,10 @@ int main(int argc, char *argv[])
 	// 	count_output(c); 
 	// 	write_output(c); 
 	// } 
-	// printf("End of file reached.\n"); 
+	
 	log_counts();
-
+    printf("End of file reached.\n"); 
+    
     //freeing memory
 	free(inbuffer);
     free(outbuffer);

@@ -307,8 +307,8 @@ int main(int argc, char *argv[]) {
     //in = input;
     //out = output;
     //init buffers
-    inbuffer = (char*) malloc(input * sizeof(char));
-    outbuffer = (char*) malloc(input * sizeof(char));
+    inbuffer = (char*) malloc(in * sizeof(char));
+    outbuffer = (char*) malloc(in * sizeof(char));
     /*
      * semaphores to make sure we don't exceed space available in buffers
      */

@@ -15,31 +15,23 @@
 #include <time.h>
 #include <stdlib.h>
 
-/*
- *Input Buffer Data Structure
- */
-char *inbuffer;
-int in;
-sem_t inputLock;
-sem_t readsem;
-int inputData;
-int iCounter;
-/*
- *Output Buffer Data Structure 
- */
-char *outbuffer;
-int out;
+char *inbuffer;     //int array buffer to hold input
+char *outbuffer;    //int array buffer to hold output
+
 sem_t writesem;
 sem_t outputLock;
-int outputData;
-int oCounter;
-
-//Reset variables
+sem_t inputLock;
+sem_t readsem;
 sem_t reset;
-int resetting;
 
-//flags finished
+int in,out; //size of in/out buffers
 bool isDone;
+
+int inputData;
+int inCounter;
+int outputData;
+int outCounter;
+int resetting;
 
 /*
 When this method get called by the random reset Thread, it stop the reader thread from reading any more input and make 
@@ -53,7 +45,7 @@ void reset_requested() {
     while (1){
         sem_wait(&inputLock);
         sem_wait(&outputLock);
-        if(outputData == 0 && inputData == 0 && iCounter == 0 && oCounter == 0) {
+        if(outputData == 0 && inputData == 0 && inCounter == 0 && outCounter == 0) {
             sem_post(&inputLock);
             sem_post(&outputLock);
 
@@ -98,7 +90,7 @@ void *inputThread(){
         //increase the size of the input buffer
         inputData++;
         //increments the number of character ready to be counted
-        iCounter++;
+        inCounter++;
         //release lock on input buffer
         sem_post(&inputLock);
     }
@@ -116,7 +108,7 @@ void *inCounterThread(){
         //grabs the lock on input buffer
         sem_wait(&inputLock);
         //Checks if there are items ready to counted
-        if(iCounter == 0){
+        if(inCounter == 0){
             if(isDone){
                 sem_post(&inputLock);
                 break;
@@ -129,7 +121,7 @@ void *inCounterThread(){
             //increments the counting index
             currentIndex++;
             //decreases the items to be counted 
-            iCounter--;
+            inCounter--;
             //releases the lock on the input buffer
             sem_post(&inputLock);
         }
@@ -180,7 +172,7 @@ void *encryptThread(){
             inputData--;
             //indicate stuff inside output buffer
             outputData++;
-            oCounter++;
+            outCounter++;
             //signal freed space in input buffer
             sem_post(&readsem);
             //unlock buffers
@@ -200,7 +192,7 @@ void *outCounterThread(){
         //lock output buffer
         sem_wait(&outputLock);
         //Checks if there are items ready to counted
-        if(oCounter == 0){
+        if(outCounter == 0){
             if(isDone){
                 sem_post(&outputLock);
                 break;
@@ -214,7 +206,7 @@ void *outCounterThread(){
             //increments the counting index
             currentIndex++;
             //decreases the items to be counted 
-            oCounter--;
+            outCounter--;
             //unlock output buffer
             sem_post(&outputLock);
         }
@@ -298,8 +290,8 @@ int main(int argc, char *argv[]) {
     resetting = 0;
     inputData = 0;
     outputData = 0;
-    iCounter = 0;
-    oCounter = 0;
+    inCounter = 0;
+    outCounter = 0;
 
     //initialize semaphores
     sem_init(&readsem, 0, in);

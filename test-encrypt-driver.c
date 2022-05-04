@@ -262,15 +262,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    printf("before size setting.\n");
-
-    in = insize;
-    out = outsize;
-
-    printf("setting size success\n");
-
-    inbuffer = malloc(sizeof(char) * in);
-    outbuffer = malloc(sizeof(char) * out);
+    inbuffer = (char*) malloc(sizeof(char) * in);
+    outbuffer = (char*) malloc(sizeof(char) * out);
 
     printf("allocate memory success\n");
 
@@ -289,6 +282,19 @@ int main(int argc, char *argv[])
 
     printf("initialize variables success\n");
     
+    pthread_t reader;
+	pthread_t inputCounter;
+	pthread_t encryptor;
+	pthread_t outputCounter;
+	pthread_t writer;
+
+    printf("declare pthread success\n");
+
+    in = insize;
+    out = outsize;
+
+    printf("setting size success\n");
+    
     //initialize semaphores
     sem_init(&readsem, 0, in);
     sem_init(&writesem, 0, out);
@@ -297,20 +303,6 @@ int main(int argc, char *argv[])
     sem_init(&reset, 0, 0);
 
     printf("initialize sem success\n");
-
-    //creating threads
-	pthread_t reader;
-	pthread_t inputCounter;
-	pthread_t encryptor;
-	pthread_t outputCounter;
-	pthread_t writer;
-	// pthread_attr_t attr;
-
-    printf("declare pthread success\n");
-
-    // pthread_attr_init(&attr);
-
-    // printf("attr success");
 
 	pthread_create(&reader, NULL, readFile, NULL);
 

@@ -304,31 +304,31 @@ int main(int argc, char *argv[])
 	pthread_t encryptor;
 	pthread_t outputCounter;
 	pthread_t writer;
-	pthread_attr_t attr;
+	// pthread_attr_t attr;
 
     printf("declare pthread success\n");
 
-    pthread_attr_init(&attr);
+    // pthread_attr_init(&attr);
 
-    printf("attr success");
+    // printf("attr success");
 
-	pthread_create(&reader, &attr, &readFile, NULL);
+	pthread_create(&reader, NULL, readFile, NULL);
 
     printf("test1");
 
-    pthread_create(&inputCounter, &attr, &countInBuffer, NULL);
+    pthread_create(&inputCounter, NULL, countInBuffer, NULL);
     
     printf("test2");
     
-    pthread_create(&encryptor, &attr, &encryptFile, NULL);
+    pthread_create(&encryptor, NULL, encryptFile, NULL);
     
     printf("test3");
     
-    pthread_create(&outputCounter, &attr, &countOutBuffer, NULL);
+    pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
     
     printf("test4");
     
-    pthread_create(&writer, &attr, &writeFile, NULL);
+    pthread_create(&writer, NULL, writeFile, NULL);
     
     printf("test5");
     

@@ -276,10 +276,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    inbuffer = (char*) malloc(sizeof(char) * in);
-    outbuffer = (char*) malloc(sizeof(char) * out);
-
-    printf("allocate memory success\n");
+    
 
     reader = 0;
     incounter = 0;
@@ -313,6 +310,13 @@ int main(int argc, char *argv[])
 
     in = insize;
     out = outsize;
+
+    printf("set buffer size success");
+
+    inbuffer = (char*) malloc(sizeof(char) * insize);
+    outbuffer = (char*) malloc(sizeof(char) * outsize);
+
+    printf("allocate memory success\n");
 
     printf("setting size success\n");
     

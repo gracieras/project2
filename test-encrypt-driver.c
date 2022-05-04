@@ -112,22 +112,28 @@ void *countInBuffer()
     {
         sem_wait(&inputLock);
         
-        if(iCounter == 0 && isDone) 
+        if(iCounter == 0) 
         {
+            if(isDone)
+            {
+                sem_post(&inputLock);
+                break;
+            }
+
             sem_post(&inputLock);
-            break;
         }
-        
-        // count_input(inbuffer[incounter % in]);
-        int tempmod = incounter % in;
-        count_input(*(inbuffer + tempmod));
+        else
+        {
+            // count_input(inbuffer[incounter % in]);
+            int tempmod = incounter % in;
+            count_input(*(inbuffer + tempmod));
 
-        incounter++;
-        iCounter--;
+            incounter++;
+            iCounter--;
 
-        sem_post(&inputLock);
+            sem_post(&inputLock);
+        }
     }
-    // pthread_exit(0);
 }
 
 //thread method that encrypts characters as they become available in the inbuffer
@@ -145,30 +151,40 @@ void *encryptFile()
         sem_wait(&inputLock);
         sem_wait(&outputLock);
 
-        if(iCounter == 0 && isDone) 
+        if(iCounter == 0) 
         {
-            // outbuffer[encryptoutcounter] = EOF;
+            if (isDone)
+            {
+                // outbuffer[encryptoutcounter] = EOF;
+                sem_post(&writesem);
+                sem_post(&inputLock);
+                sem_post(&outputLock);
+                break;
+            }
+
             sem_post(&writesem);
             sem_post(&inputLock);
             sem_post(&outputLock);
-            break;
         }
+        else
+        {
+            int tempmodin = encryptincounter % in;
+            int tempmodout = encryptoutcounter % out;
+            *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
+            // outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
 
-        int tempmodin = encryptincounter % in;
-        int tempmodout = encryptoutcounter % out;
-        *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
-        // outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
+            inputData--;
+            outputData++;
+            oCounter++;
 
-        inputData--;
-        outputData++;
-        oCounter++;
-
-        encryptincounter++;
-        encryptoutcounter++;
+            encryptincounter++;
+            encryptoutcounter++;
+            
+            sem_post(&readsem);
+            sem_post(&inputLock);
+            sem_post(&outputLock);
+        }
         
-        sem_post(&readsem);
-        sem_post(&inputLock);
-        sem_post(&outputLock);
     }
     // pthread_exit(0);
 }
@@ -183,19 +199,26 @@ void *countOutBuffer()
     {
         sem_wait(&outputLock);
         
-        if(oCounter == 0 && isDone) 
+        if(oCounter == 0) 
         {
-            sem_post(&outputLock);
-            break;
+            if(isDone)
+            {
+                sem_post(&outputLock);
+                break;
+            }
+            
         }
+        else
+        {
+            int tempmod = outcounter % out;
+            count_output(*(outbuffer + tempmod));
 
-        int tempmod = outcounter % out;
-        count_output(*(outbuffer + tempmod));
+            outcounter++;
+            oCounter--;
 
-        outcounter++;
-        oCounter--;
-
-        sem_post(&outputLock);
+            sem_post(&outputLock);
+        }
+        
     }
     // pthread_exit(0);
 }
@@ -211,21 +234,26 @@ void *writeFile()
     {
         sem_wait(&outputLock);
 		
-        if(oCounter == 0 && isDone) 
+        if(oCounter == 0) 
         {
-            sem_post(&outputLock);
-            break;
+            if(isDone)
+            {
+                sem_post(&outputLock);
+                break;
+            }
         }
+        else
+        {
+            int tempmod = writer % out;
+            write_output(*(outbuffer + tempmod));
+            // write_output(outbuffer[writer % out]);
 
-        int tempmod = writer % out;
-        write_output(*(outbuffer + tempmod));
-        // write_output(outbuffer[writer % out]);
+            writer++;
+            outputData--;
 
-        writer++;
-        outputData--;
-
-        sem_post(&writesem);
-        sem_post(&outputLock);
+            sem_post(&writesem);
+            sem_post(&outputLock);
+        }
     }
 }
 

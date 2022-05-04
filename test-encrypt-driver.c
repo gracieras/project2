@@ -154,10 +154,10 @@ void *encryptFile()
             break;
         }
 
-        // int tempmodin = encryptincounter % in;
-        // int tempmodout = encryptoutcounter % out;
-        // *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
-        outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
+        int tempmodin = encryptincounter % in;
+        int tempmodout = encryptoutcounter % out;
+        *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
+        // outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
 
         inputData--;
         outputData++;

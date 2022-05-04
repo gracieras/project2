@@ -289,6 +289,13 @@ int main(int argc, char *argv[])
 	pthread_t outputCounter;
 	pthread_t writer;
 
+    pthread_t test;
+
+    printf("before\n");
+    pthread_create(&test, NULL, testThread, NULL);
+    pthread_join(test, NULL);
+    printf("after\n");
+    
     printf("declare pthread success\n");
 
     in = insize;
@@ -351,4 +358,10 @@ int main(int argc, char *argv[])
     //freeing memory
 	free(inbuffer);
     free(outbuffer);
+}
+
+void *testThread()
+{
+    printf("testing");
+    return NULL;
 }

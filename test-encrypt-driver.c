@@ -242,7 +242,8 @@ int main(int argc, char *argv[])
 
     //prompt user for input buffer size
     printf("please give input buffer size.\n");
-    scanf("%d", in);
+    int insize;
+    scanf("%d", insize);
     if (in <= 1)
     {
         printf("input buffer needs to be greater than 1");
@@ -251,14 +252,20 @@ int main(int argc, char *argv[])
 
     //prompt user for output buffer size
     printf("please give output buffer size.\n");
-    scanf("%d", out);
+    int outsize;
+    scanf("%d", outsize);
     if (out <= 1)
     {
         printf("output buffer needs to be greater than 1");
         exit(0);
     }
 
-    printf("before memory allocation");
+    printf("before size setting.");
+
+    in = insize;
+    out = outsize;
+
+    printf("setting size success");
 
     inbuffer = malloc(sizeof(char) * in);
     outbuffer = malloc(sizeof(char) * out);

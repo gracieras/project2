@@ -10,8 +10,8 @@
 #include <time.h>
 #include <stdlib.h>
 
-char *inbuffer;     //int array buffer to hold input
-char *outbuffer;    //int array buffer to hold output
+int *inbuffer;     //int array buffer to hold input
+int *outbuffer;    //int array buffer to hold output
 
 sem_t encryptinsem;
 sem_t encryptoutsem;

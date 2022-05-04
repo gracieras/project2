@@ -254,12 +254,23 @@ void *writeThread(){
 
 int main(int argc, char *argv[]) {
     int input, output;
-    if(argc != 4){
+    char *finput, *foutput, *flog;
+
+    //obtaining file name
+    if (argc == 4)
+    {
+        finput = argv[1];
+        foutput = argv[2];
+        flog = argv[3];
+    }
+    else
+    {
         printf("please include input file name, output file name, and log file name");
         exit(0);
     }
 
-    init(argv[1], argv[2], argv[3]);
+    //calling init with file names
+	init(finput, foutput, flog);
 
     //prompt user for input buffer size
     printf("What input buffer size to use? ");

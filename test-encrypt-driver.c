@@ -240,9 +240,11 @@ int main(int argc, char *argv[])
     //calling init with file names
 	init(finput, foutput, flog);
 
+    int insize;
+    int outsize;
+
     //prompt user for input buffer size
     printf("please give input buffer size. ");
-    int insize;
     scanf("%d\n", &insize);
     if (insize <= 1)
     {
@@ -252,7 +254,7 @@ int main(int argc, char *argv[])
 
     //prompt user for output buffer size
     printf("please give output buffer size. ");
-    int outsize;
+    
     scanf("%d\n", &outsize);
     if (outsize <= 1)
     {
@@ -308,10 +310,25 @@ int main(int argc, char *argv[])
 
     // pthread_attr_init(&attr);
 	pthread_create(&reader, NULL, &readFile, NULL);
+
+    printf("test1");
+
     pthread_create(&inputCounter, NULL, &countInBuffer, NULL);
+    
+    printf("test2");
+    
     pthread_create(&encryptor, NULL, &encryptFile, NULL);
+    
+    printf("test3");
+    
     pthread_create(&outputCounter, NULL, &countOutBuffer, NULL);
+    
+    printf("test4");
+    
     pthread_create(&writer, NULL, &writeFile, NULL);
+    
+    printf("test5");
+    
 
     printf("create pthread success\n");
 

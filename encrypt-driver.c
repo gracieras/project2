@@ -190,10 +190,13 @@ int main(int argc, char *argv[])
     //calling init with file names
 	init(finput, foutput, flog);
 
+    int insize;
+    int outsize;
+
     //prompt user for input buffer size
     printf("What input buffer size to use? ");
-    scanf("%d", &in);
-    if (in <= 1)
+    scanf("%d", &insize);
+    if (insize <= 1)
     {
         printf("input buffer needs to be greater than 1");
         exit(0);
@@ -201,12 +204,15 @@ int main(int argc, char *argv[])
 
     //prompt user for output buffer size
     printf("What output buffer size to use? ");
-    scanf("%d", &out);
-    if (out <= 1)
+    scanf("%d", &outsize);
+    if (outsize <= 1)
     {
         printf("output buffer needs to be greater than 1");
         exit(0);
     }
+
+    in = insize;
+    out = outsize;
 
     printf("after inputs");
 

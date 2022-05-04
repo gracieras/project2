@@ -71,7 +71,7 @@ The reader thread is responsible for reading from the input file one character a
 placing the characters in the input buffer. It must do so by calling the provided function 
 read_input(). Each buffer item corresponds to a character.
 */
-void *inputThread(){
+void *readFile(){
     //The index at which the input buffer can write
     int currentIndex = 0;
     char c;
@@ -101,7 +101,7 @@ void *inputThread(){
 The input counter thread simply counts occurrences of each letter in the input file by looking at 
 each character in the input buffer
 */
-void *inCounterThread(){
+void *countInBuffer(){
     //The counting index in the input buffer
     int currentIndex = 0;
     while(1){
@@ -132,7 +132,7 @@ void *inCounterThread(){
 The encryption thread consumes one character at a time from the input buffer, encrypts it, and 
 places it in the output buffer. It must do so by calling the provided function encrypt().
 */
-void *encryptThread(){
+void *encryptFile(){
     //The index at which the input biffer can read
     int currentIndex_in = 0;
     //The index at which the output buffer can write
@@ -185,7 +185,7 @@ void *encryptThread(){
 The output counter thread simply counts occurrences of each letter in the output file by looking 
 at each character in the output buffer. It must call the provided function count_output(). 
 */
-void *outCounterThread(){
+void *countOutBuffer(){
     //The counting index of the output buffer
     int currentIndex = 0;
     while(1){
@@ -216,7 +216,7 @@ void *outCounterThread(){
 The writer thread is responsible for writing the encrypted characters in the output buffer to the 
 output file. It must do so by calling the provided function write_output(). 
 */
-void *writeThread(){
+void *writeFile(){
     //The index at which the output buffer can read
     int currentIndex = 0;
     while(1){
@@ -308,11 +308,11 @@ int main(int argc, char *argv[]) {
     pthread_t writeT;
 
     //creating threads
-    pthread_create(&readT, NULL, inputThread, NULL);
-    pthread_create(&input_countT, NULL, inCounterThread, NULL);
-    pthread_create(&encryptT, NULL, encryptThread, NULL);
-    pthread_create(&output_countT, NULL, outCounterThread, NULL);
-    pthread_create(&writeT, NULL, writeThread, NULL);
+    pthread_create(&readT, NULL, readFile, NULL);
+    pthread_create(&input_countT, NULL, countInBuffer, NULL);
+    pthread_create(&encryptT, NULL, encryptFile, NULL);
+    pthread_create(&output_countT, NULL, countOutBuffer, NULL);
+    pthread_create(&writeT, NULL, writeFile, NULL);
 
     pthread_join(readT, NULL);
     pthread_join(input_countT, NULL);

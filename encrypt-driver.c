@@ -234,14 +234,14 @@ int main(int argc, char *argv[])
 	pthread_t encryptor;
 	pthread_t outputCounter;
 	pthread_t writer;
-	pthread_attr_t attr;
+	// pthread_attr_t attr;
 
-    pthread_attr_init(&attr);
-	pthread_create(&reader, &attr, &readFile, 0);
-    pthread_create(&inputCounter, &attr, &countInBuffer, 0);
-    pthread_create(&encryptor, &attr, &encryptFile, 0);
-    pthread_create(&outputCounter, &attr, &countOutBuffer, 0);
-    pthread_create(&writer, &attr, &writeFile, 0);
+    // pthread_attr_init(&attr);
+	pthread_create(&reader, NULL, readFile, NULL);
+    pthread_create(&inputCounter, NULL, countInBuffer, NULL);
+    pthread_create(&encryptor, NULL, encryptFile, NULL);
+    pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
+    pthread_create(&writer, NULL, writeFile, NULL);
 
 	pthread_join(reader, NULL);
     pthread_join(inputCounter, NULL);

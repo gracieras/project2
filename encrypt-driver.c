@@ -13,24 +13,20 @@
 char *inbuffer;     //char array buffer to hold input
 char *outbuffer;    //char array buffer to hold output
 
-sem_t encryptinsem;
-sem_t encryptoutsem;
-sem_t countinsem;
-sem_t countoutsem;
+// sem_t encryptinsem;
+// sem_t encryptoutsem;
+// sem_t countinsem;
+// sem_t countoutsem;
 sem_t readsem; //space_inside_inputBuffer
 sem_t writesem; //space_inside_outputBuffer
-
-
 sem_t inputLock;
 sem_t outputLock;
+sem_t reset;
 
 int inputData; //stuff_inside_InBuffer;
 int outputData; //stuff_inside_OutBuffer;
-
 int iCounter; //chars_to_count_input;
 int oCounter; //chars_to_count_output;
-
-sem_t reset;
 int resetting;
 
 //counters for read/write and counters for buffers
@@ -281,10 +277,10 @@ int main(int argc, char *argv[])
 
     
     //initialize semaphores
-    sem_init(&encryptinsem, 0, 0);
-    sem_init(&encryptoutsem, 0, 1);
-    sem_init(&countinsem, 0, 0);
-    sem_init(&countoutsem, 0, 0);
+    // sem_init(&encryptinsem, 0, 0);
+    // sem_init(&encryptoutsem, 0, 1);
+    // sem_init(&countinsem, 0, 0);
+    // sem_init(&countoutsem, 0, 0);
     sem_init(&readsem, 0, in);
     sem_init(&writesem, 0, out);
     sem_init(&inputLock, 0, 1);
@@ -300,11 +296,11 @@ int main(int argc, char *argv[])
 	pthread_attr_t attr;
 
     pthread_attr_init(&attr);
-	pthread_create(&reader, &attr, &readFile, 0);
-    pthread_create(&inputCounter, &attr, &countInBuffer, 0);
-    pthread_create(&encryptor, &attr, &encryptFile, 0);
-    pthread_create(&outputCounter, &attr, &countOutBuffer, 0);
-    pthread_create(&writer, &attr, &writeFile, 0);
+	pthread_create(&reader, &attr, &readFile, NULL);
+    pthread_create(&inputCounter, &attr, &countInBuffer, NULL);
+    pthread_create(&encryptor, &attr, &encryptFile, NULL);
+    pthread_create(&outputCounter, &attr, &countOutBuffer, NULL);
+    pthread_create(&writer, &attr, &writeFile, NULL);
 
 	pthread_join(reader, NULL);
     pthread_join(inputCounter, NULL);
@@ -313,11 +309,14 @@ int main(int argc, char *argv[])
     pthread_join(writer, NULL);
 
 	sem_destroy(&readsem);
-    sem_destroy(&countinsem);
-    sem_destroy(&encryptinsem);
-    sem_destroy(&encryptoutsem);
-    sem_destroy(&countoutsem);
+    // sem_destroy(&countinsem);
+    // sem_destroy(&encryptinsem);
+    // sem_destroy(&encryptoutsem);
+    // sem_destroy(&countoutsem);
     sem_destroy(&writesem);
+    sem_destroy(&inputLock);
+    sem_destroy(&outputLock);
+    sem_destroy(&reset);
 
     //log character counts
     // char c;

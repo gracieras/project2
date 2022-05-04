@@ -41,11 +41,7 @@ void reset_requested()
     printf("Total output count with the current key is %d\n", get_output_total_count());
     printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_output_count('a'), get_output_count('b'), get_output_count('c'), get_output_count('d'), get_output_count('e'), get_output_count('f'), get_output_count('g'), get_output_count('h'), get_output_count('i'), get_output_count('j'), get_output_count('k'), get_output_count('l'), get_output_count('m'), get_output_count('n'), get_output_count('o'), get_output_count('p'), get_output_count('q'), get_output_count('r'), get_output_count('s'), get_output_count('t'), get_output_count('u'), get_output_count('v'), get_output_count('w'), get_output_count('x'), get_output_count('y'), get_output_count('z'));
     
-<<<<<<< HEAD
     //reset_finished();
-=======
-    reset_finished();
->>>>>>> aa6ee20d3b3a7bafb338a72e2458c3f97d14ea0f
 }
 
 void reset_finished() 
@@ -213,8 +209,8 @@ int main(int argc, char *argv[])
     }
 
     //allocate space for inbuffer and outbuffer
-    inbuffer = (char*)malloc(sizeof(int) * in);
-    outbuffer = (char*)malloc(sizeof(int) * out);
+    inbuffer = malloc(sizeof(int) * in);
+    outbuffer = malloc(sizeof(int) * out);
 
     reader = 0;
     incounter = 0;
@@ -230,11 +226,7 @@ int main(int argc, char *argv[])
     sem_init(&countinsem, 0, 0);
     sem_init(&countoutsem, 0, 0);
     sem_init(&readsem, 0, in);
-<<<<<<< HEAD
     sem_init(&writesem, 0, out);
-=======
-    sem_init(&writesem, 0, 0);
->>>>>>> aa6ee20d3b3a7bafb338a72e2458c3f97d14ea0f
 
     //creating threads
 	pthread_t reader;

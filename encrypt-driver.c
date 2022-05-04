@@ -20,6 +20,19 @@ sem_t countoutsem;
 sem_t readsem;
 sem_t writesem;
 
+
+sem_t inputLock;
+sem_t outputLock;
+sem_t iBuff;
+sem_t oBuff;
+
+int inputData; //stuff_inside_InBuffer;
+int outputData; //stuff_inside_OutBuffer;
+
+int iCounter; //chars_to_count_input;
+int oCounter; //chars_to_count_output;
+
+sem_t reset;
 int resetting;
 
 //counters for read/write and counters for buffers
@@ -30,25 +43,37 @@ int in,out; //size of in/out buffers
 void reset_requested() 
 {
     resetting = 1;
-    sem_wait(&countinsem);
-    sem_wait(&countoutsem);
+    while (1)
+    {
+        sem_wait(&inputLock);
+        sem_wait(&outputLock);
+
+        if (inputData == 0 && outputData == 0 && iCounter == 0 && oCounter == 0)
+        {
+            sem_post(&inputLock);
+            sem_post(&outputLock);
+            break;
+        }
+
+        sem_post(&inputLock);
+        sem_post(&outputLock);
+    }
 	log_counts();
+
+
     printf("reset requested test");
     printf("\n");
 
-    printf("Total input count with the current key is %d\n", get_input_total_count());
-    printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_input_count('a'), get_input_count('b'), get_input_count('c'), get_input_count('d'), get_input_count('e'), get_input_count('f'), get_input_count('g'), get_input_count('h'), get_input_count('i'), get_input_count('j'), get_input_count('k'), get_input_count('l'), get_input_count('m'), get_input_count('n'), get_input_count('o'), get_input_count('p'), get_input_count('q'), get_input_count('r'), get_input_count('s'), get_input_count('t'), get_input_count('u'), get_input_count('v'), get_input_count('w'), get_input_count('x'), get_input_count('y'), get_input_count('z'));
-    printf("Total output count with the current key is %d\n", get_output_total_count());
-    printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_output_count('a'), get_output_count('b'), get_output_count('c'), get_output_count('d'), get_output_count('e'), get_output_count('f'), get_output_count('g'), get_output_count('h'), get_output_count('i'), get_output_count('j'), get_output_count('k'), get_output_count('l'), get_output_count('m'), get_output_count('n'), get_output_count('o'), get_output_count('p'), get_output_count('q'), get_output_count('r'), get_output_count('s'), get_output_count('t'), get_output_count('u'), get_output_count('v'), get_output_count('w'), get_output_count('x'), get_output_count('y'), get_output_count('z'));
-    
-    reset_finished();
+    // printf("Total input count with the current key is %d\n", get_input_total_count());
+    // printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_input_count('a'), get_input_count('b'), get_input_count('c'), get_input_count('d'), get_input_count('e'), get_input_count('f'), get_input_count('g'), get_input_count('h'), get_input_count('i'), get_input_count('j'), get_input_count('k'), get_input_count('l'), get_input_count('m'), get_input_count('n'), get_input_count('o'), get_input_count('p'), get_input_count('q'), get_input_count('r'), get_input_count('s'), get_input_count('t'), get_input_count('u'), get_input_count('v'), get_input_count('w'), get_input_count('x'), get_input_count('y'), get_input_count('z'));
+    // printf("Total output count with the current key is %d\n", get_output_total_count());
+    // printf("A:%d B:%d C:%d D:%d E:%d F:%d G:%d H:%d I:%d J:%d K:%d L:%d M:%d N:%d O:%d P:%d Q:%d R:%d S:%d T:%d U:%d V:%d W:%d X:%d Y:%d Z:%d\n", get_output_count('a'), get_output_count('b'), get_output_count('c'), get_output_count('d'), get_output_count('e'), get_output_count('f'), get_output_count('g'), get_output_count('h'), get_output_count('i'), get_output_count('j'), get_output_count('k'), get_output_count('l'), get_output_count('m'), get_output_count('n'), get_output_count('o'), get_output_count('p'), get_output_count('q'), get_output_count('r'), get_output_count('s'), get_output_count('t'), get_output_count('u'), get_output_count('v'), get_output_count('w'), get_output_count('x'), get_output_count('y'), get_output_count('z'));
 }
 
 void reset_finished() 
 {
 	resetting = 0;
-    sem_post(&countinsem);
-    sem_post(&countoutsem);
+    sem_post(&reset);
 }
 
 //thread method to read each character in the input file as they buffer is ready to receive them,
@@ -56,41 +81,50 @@ void reset_finished()
 //signals that characters are ready to be counted
 void *readFile(void *param) {
 
-    int c;
+    char c;
     reader = 0;
-    while ((c = read_input()) != EOF) {
-        while(resetting == 1) {
-            reset_requested();
+    while ((c = read_input()) != EOF) 
+    {
+        if(resetting == 1) 
+        {
+            sem_wait(&reset);
         }
+
         sem_wait(&readsem);
+        sem_wait(&inputLock);
+
         inbuffer[reader] = c;
-        sem_post(&countinsem);
         reader = (reader + 1) % in;
+
+        inputData++;
+        iCounter++;
+
+        sem_post(&inputLock);
     }   
     inbuffer[reader] = EOF;
-    sem_post(&countinsem);    
+    // sem_post(&countinsem);    
     pthread_exit(0);
 }
-
 //thread method to count each character in the inbuffer and add to total count 
 //and character counts. after character is counted it signals it is ready to be encrypted
-void *countInBuffer(void *param) {
-
+void *countInBuffer(void *param) 
+{
     incounter = 0;
-    while (1) {
-        while(resetting == 1) {
-            reset_requested();
-        }
-        sem_wait(&countinsem);
+    while (1) 
+    {
+        sem_wait(&inputLock);
         
-        if(inbuffer[incounter] == EOF) {
-            sem_post(&encryptinsem);
+        if(inbuffer[incounter] == EOF) 
+        {
+            // sem_post(&encryptinsem);
+            sem_post(&inputLock);
             break;
         }
         
         count_input(inbuffer[incounter]);
-        sem_post(&encryptinsem);
         incounter = (incounter + 1) % in;
+        
+        sem_post(&inputLock);
     }
     pthread_exit(0);
 }

@@ -46,9 +46,9 @@ void reset_requested()
 
 void reset_finished() 
 {
-	resetting = 0;
     sem_post(&countinsem);
     sem_post(&countoutsem);
+    resetting = 0;
 }
 
 //thread method to read each character in the input file as they buffer is ready to receive them,
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 	init(finput, foutput, flog);
 
     //prompt user for input buffer size
-    printf("please give input buffer size.\n");
+    printf("What input buffer size to use? ");
     scanf("%d", &in);
     if (in <= 1)
     {
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
     }
 
     //prompt user for output buffer size
-    printf("please give output buffer size.\n");
+    printf("What output buffer size to use? ");
     scanf("%d", &out);
     if (out <= 1)
     {
@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     resetting = 0;
 
     //initialize semaphores
-    sem_init(&encryptinsem, 0, 0);
+    sem_init(&encryptinsem, 0, 1);
     sem_init(&encryptoutsem, 0, 1);
     sem_init(&countinsem, 0, 0);
     sem_init(&countoutsem, 0, 0);
@@ -255,16 +255,6 @@ int main(int argc, char *argv[])
     sem_destroy(&encryptoutsem);
     sem_destroy(&countoutsem);
     sem_destroy(&writesem);
-
-    //log character counts
-    // char c;
-	// while ((c = read_input()) != EOF) 
-    // { 
-	// 	count_input(c); 
-	// 	c = encrypt(c); 
-	// 	count_output(c); 
-	// 	write_output(c); 
-	// } 
 	
     printf("End of file reached."); 
     printf("\n");

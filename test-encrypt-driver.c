@@ -97,7 +97,7 @@ void *readFile()
     // sem_post(&countinsem);  
 
     isDone = true;  
-    pthread_exit(0);
+    // pthread_exit(0);
 }
 //thread method to count each character in the inbuffer and add to total count 
 //and character counts. after character is counted it signals it is ready to be encrypted
@@ -122,7 +122,7 @@ void *countInBuffer(void *param)
 
         sem_post(&inputLock);
     }
-    pthread_exit(0);
+    // pthread_exit(0);
 }
 
 //thread method that encrypts characters as they become available in the inbuffer
@@ -163,7 +163,7 @@ void *encryptFile(void *param)
         sem_post(&inputLock);
         sem_post(&outputLock);
     }
-    pthread_exit(0);
+    // pthread_exit(0);
 }
 
 //method thread to count total and count each character in the outbuffer
@@ -189,7 +189,7 @@ void *countOutBuffer(void *param)
 
         sem_post(&outputLock);
     }
-    pthread_exit(0);
+    // pthread_exit(0);
 }
 
 //method thread to write character to output file
@@ -217,7 +217,7 @@ void *writeFile(void *param)
         sem_post(&writesem);
         sem_post(&outputLock);
     }
-    pthread_exit(0);
+    // pthread_exit(0);
 }
 
 int main(int argc, char *argv[]) 

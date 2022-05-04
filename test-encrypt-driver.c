@@ -70,24 +70,24 @@ void reset_finished()
 //signals that characters are ready to be counted
 void *readFile() 
 {
-    printf("in readfile");
+    printf("in readfile\n");
     char c;
     reader = 0;
     while ((c = read_input()) != EOF) 
     {
-        printf("before resetting check");
+        printf("before resetting check\n");
         if(resetting == 1) 
         {
             sem_wait(&reset);
         }
-        printf("after resetting check");
+        printf("after resetting check\n");
 
         sem_wait(&readsem);
 
-        printf("after readsem wait");
+        printf("after readsem wait\n");
 
         sem_wait(&inputLock);
-        printf("after inputlock");
+        printf("after inputlock\n");
         // inbuffer[reader % in] = c;
         *(inbuffer + (reader % in)) = c;
         // *(input_buffer + (currentIndex % input_buffer_size)) = c;
@@ -331,23 +331,23 @@ int main(int argc, char *argv[])
 
 	pthread_create(&reader, NULL, readFile, NULL);
 
-    printf("test1");
+    printf("test1\n");
 
     pthread_create(&inputCounter, NULL, countInBuffer, NULL);
     
-    printf("test2");
+    printf("test2\n");
     
     pthread_create(&encryptor, NULL, encryptFile, NULL);
     
-    printf("test3");
+    printf("test3\n");
     
     pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
     
-    printf("test4");
+    printf("test4\n");
     
     pthread_create(&writer, NULL, writeFile, NULL);
     
-    printf("test5");
+    printf("test5\n");
     
 
     printf("create pthread success\n");

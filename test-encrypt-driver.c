@@ -243,34 +243,34 @@ int main(int argc, char *argv[])
     //prompt user for input buffer size
     printf("please give input buffer size. ");
     int insize;
-    scanf("%d", &insize);
+    scanf("%d\n", &insize);
     if (insize <= 1)
     {
-        printf("input buffer needs to be greater than 1");
+        printf("input buffer needs to be greater than 1\n");
         exit(0);
     }
 
     //prompt user for output buffer size
     printf("please give output buffer size. ");
     int outsize;
-    scanf("%d", &outsize);
+    scanf("%d\n", &outsize);
     if (outsize <= 1)
     {
-        printf("output buffer needs to be greater than 1");
+        printf("output buffer needs to be greater than 1\n");
         exit(0);
     }
 
-    printf("before size setting.");
+    printf("before size setting.\n");
 
     in = insize;
     out = outsize;
 
-    printf("setting size success");
+    printf("setting size success\n");
 
     inbuffer = malloc(sizeof(char) * in);
     outbuffer = malloc(sizeof(char) * out);
 
-    printf("allocate memory success");
+    printf("allocate memory success\n");
 
     reader = 0;
     incounter = 0;
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
     oCounter = 0;
     isDone = false;
 
-    printf("initialize variables success");
+    printf("initialize variables success\n");
     
     //initialize semaphores
     sem_init(&readsem, 0, in);
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
     sem_init(&outputLock, 0, 1);
     sem_init(&reset, 0, 0);
 
-    printf("initialize sem success");
+    printf("initialize sem success\n");
 
     //creating threads
 	pthread_t reader;
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 	pthread_t writer;
 	// pthread_attr_t attr;
 
-    printf("declare pthread success");
+    printf("declare pthread success\n");
 
     // pthread_attr_init(&attr);
 	pthread_create(&reader, NULL, &readFile, NULL);
@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
     pthread_create(&outputCounter, NULL, &countOutBuffer, NULL);
     pthread_create(&writer, NULL, &writeFile, NULL);
 
-    printf("create pthread success");
+    printf("create pthread success\n");
 
 	pthread_join(reader, NULL);
     pthread_join(inputCounter, NULL);
@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
     pthread_join(outputCounter, NULL);
     pthread_join(writer, NULL);
 
-    printf("pthread join success");
+    printf("pthread join success\n");
 
 	sem_destroy(&readsem);
     sem_destroy(&writesem);
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
     sem_destroy(&outputLock);
     sem_destroy(&reset);
 
-    printf("sem destroy success");
+    printf("sem destroy success\n");
 	
 	log_counts();
     printf("End of file reached."); 

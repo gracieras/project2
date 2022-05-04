@@ -253,7 +253,7 @@ void *writeThread(){
 }
 
 int main(int argc, char *argv[]) {
-    //int input, output;
+
     char *finput, *foutput, *flog;
 
     //obtaining file name
@@ -289,41 +289,33 @@ int main(int argc, char *argv[]) {
         printf("output buffer needs to be greater than 1");
         exit(0);
     }
-    //flags
+
+    //allocate space for inbuffer and outbuffer
+    inbuffer = (char*) malloc(in * sizeof(char));
+    outbuffer = (char*) malloc(in * sizeof(char));
+
     isDone = false;
     resetting = 0;
-    //initialize for buffers
     inputData = 0;
     outputData = 0;
     iCounter = 0;
     oCounter = 0;
-    //threads
+
+    //initialize semaphores
+    sem_init(&readsem, 0, in);
+    sem_init(&writesem, 0, out);
+    sem_init(&inputLock, 0, 1);
+    sem_init(&outputLock, 0 , 1);
+    sem_init(&reset, 0, 0);
+
+    //declare threads
     pthread_t readT;
     pthread_t input_countT;
     pthread_t encryptT;
     pthread_t output_countT;
     pthread_t writeT;
-    //buffer sizes
-    //in = input;
-    //out = output;
-    //init buffers
-    inbuffer = (char*) malloc(in * sizeof(char));
-    outbuffer = (char*) malloc(in * sizeof(char));
-    /*
-     * semaphores to make sure we don't exceed space available in buffers
-     */
-    sem_init(&readsem, 0, in);
-    sem_init(&writesem, 0, out);
-    /*
-     * locking buffers to avoid race condition
-     */
-    sem_init(&inputLock, 0, 1);
-    sem_init(&outputLock, 0 , 1);
-    /*
-     * if a reset is requested then reading thread should wait
-     */
-    sem_init(&reset, 0, 0);
 
+    //creating threads
     pthread_create(&readT, NULL, inputThread, NULL);
     pthread_create(&input_countT, NULL, inCounterThread, NULL);
     pthread_create(&encryptT, NULL, encryptThread, NULL);

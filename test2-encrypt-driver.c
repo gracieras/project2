@@ -250,18 +250,42 @@ void *writeThread(){
 }
 
 int main(int argc, char *argv[]) {
-    int input, output;
-    if(argc < 4){
-        printf("arguments should be: inputfile outputfile logfile\n");
-        return 1;
+    //int input, output;
+    char *finput, *foutput, *flog;
+
+    //obtaining file name
+    if (argc == 4)
+    {
+        finput = argv[1];
+        foutput = argv[2];
+        flog = argv[3];
+    }
+    else
+    {
+        printf("please include input file name, output file name, and log file name");
+        exit(0);
     }
 
-    init(argv[1], argv[2], argv[3]);
+    //calling init with file names
+	init(finput, foutput, flog);
 
-    printf("input buffer size? ");
-    scanf(" %d", &input);
-    printf("output buffer size? ");
-    scanf(" %d", &output);
+    //prompt user for input buffer size
+    printf("What input buffer size to use? ");
+    scanf("%d", &in);
+    if (in <= 1)
+    {
+        printf("input buffer needs to be greater than 1");
+        exit(0);
+    }
+
+    //prompt user for output buffer size
+    printf("What output buffer size to use? ");
+    scanf("%d", &out);
+    if (out <= 1)
+    {
+        printf("output buffer needs to be greater than 1");
+        exit(0);
+    }
     //flags
     isDone = false;
     resetting = 0;

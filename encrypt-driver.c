@@ -125,7 +125,7 @@ void *countInBuffer(void *param)
 
         incounter = (incounter + 1) % in;
         iCounter--;
-        
+
         sem_post(&inputLock);
     }
     pthread_exit(0);
@@ -175,22 +175,26 @@ void *encryptFile(void *param)
 
 //method thread to count total and count each character in the outbuffer
 //once counted, signals that the character is ready to be written to output file
-void *countOutBuffer(void *param) {
-
+void *countOutBuffer(void *param) 
+{
     outcounter = 0;
-    while(1) {
-        while(resetting == 1) {
-            reset_requested();
-        }
-        sem_wait(&countoutsem);
+
+    while(1) 
+    {
+        sem_wait(&outputLock);
         
-        if(outbuffer[outcounter] == EOF) {
-            sem_post(&writesem);
+        if(outbuffer[outcounter] == EOF) 
+        {
+            sem_post(&outputLock);
             break;
-        }   
+        }
+
         count_output(outbuffer[outcounter]);
-        sem_post(&writesem);
+        
         outcounter = (outcounter + 1) % out;
+        oCounter--;
+
+        sem_post(&outputLock);
     }
     pthread_exit(0);
 }
@@ -198,22 +202,26 @@ void *countOutBuffer(void *param) {
 //method thread to write character to output file
 //once character is written, signals encrypt thread that the output buffer is ready to 
 //receive new characters
-void *writeFile(void *param) {
-
+void *writeFile(void *param) 
+{
     writer = 0;
-    while(1) {
-        while(resetting == 1) {
-            reset_requested();
 
-        }
-        sem_wait(&writesem);
+    while(1) 
+    {
+        sem_wait(&outputLock);
 		
-        if(outbuffer[writer] == EOF) {
+        if(outbuffer[writer] == EOF) 
+        {
+            sem_post(&outputLock);
             break;
         }
+
         write_output(outbuffer[writer]);
-        sem_post(&encryptoutsem);
         writer = (writer + 1) % out;
+        outputData--;
+
+        sem_post(&writesem);
+        sem_post(&outputLock);
     }
     pthread_exit(0);
 }
@@ -266,14 +274,22 @@ int main(int argc, char *argv[])
     outcounter = 0;
     writer = 0;
     resetting = 0;
+    inputData = 0;
+    outputData = 0;
+    iCounter = 0;
+    oCounter = 0;
 
+    
     //initialize semaphores
     sem_init(&encryptinsem, 0, 0);
     sem_init(&encryptoutsem, 0, 1);
     sem_init(&countinsem, 0, 0);
     sem_init(&countoutsem, 0, 0);
     sem_init(&readsem, 0, in);
-    sem_init(&writesem, 0, 0);
+    sem_init(&writesem, 0, out);
+    sem_init(&inputLock, 0, 1);
+    sem_init(&outputLock, 0, 1);
+    sem_init(&reset, 0, 0);
 
     //creating threads
 	pthread_t reader;

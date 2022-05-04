@@ -261,6 +261,8 @@ int main(int argc, char *argv[])
     inbuffer = malloc(sizeof(char) * in);
     outbuffer = malloc(sizeof(char) * out);
 
+    printf("allocate memory success");
+
     reader = 0;
     incounter = 0;
     encryptincounter = 0;
@@ -274,6 +276,7 @@ int main(int argc, char *argv[])
     oCounter = 0;
     isDone = false;
 
+    printf("initialize variables success");
     
     //initialize semaphores
     sem_init(&readsem, 0, in);
@@ -281,6 +284,8 @@ int main(int argc, char *argv[])
     sem_init(&inputLock, 0, 1);
     sem_init(&outputLock, 0, 1);
     sem_init(&reset, 0, 0);
+
+    printf("initialize sem success");
 
     //creating threads
 	pthread_t reader;
@@ -290,6 +295,8 @@ int main(int argc, char *argv[])
 	pthread_t writer;
 	// pthread_attr_t attr;
 
+    printf("declare pthread success");
+
     // pthread_attr_init(&attr);
 	pthread_create(&reader, NULL, &readFile, NULL);
     pthread_create(&inputCounter, NULL, &countInBuffer, NULL);
@@ -297,17 +304,23 @@ int main(int argc, char *argv[])
     pthread_create(&outputCounter, NULL, &countOutBuffer, NULL);
     pthread_create(&writer, NULL, &writeFile, NULL);
 
+    printf("create pthread success");
+
 	pthread_join(reader, NULL);
     pthread_join(inputCounter, NULL);
     pthread_join(encryptor, NULL);
     pthread_join(outputCounter, NULL);
     pthread_join(writer, NULL);
 
+    printf("pthread join success");
+
 	sem_destroy(&readsem);
     sem_destroy(&writesem);
     sem_destroy(&inputLock);
     sem_destroy(&outputLock);
     sem_destroy(&reset);
+
+    printf("sem destroy success");
 	
 	log_counts();
     printf("End of file reached."); 

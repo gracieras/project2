@@ -1,3 +1,8 @@
+/*
+ * Grace Rasmussen - ger
+ * Noah Tang - ntang1
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -9,8 +14,6 @@
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
-
-//Authors - 
 
 /*
  *Input Buffer Data Structure
@@ -301,16 +304,16 @@ int main(int argc, char *argv[]) {
     pthread_t output_countT;
     pthread_t writeT;
     //buffer sizes
-    in = input;
-    out = output;
+    //in = input;
+    //out = output;
     //init buffers
     inbuffer = (char*) malloc(input * sizeof(char));
     outbuffer = (char*) malloc(input * sizeof(char));
     /*
      * semaphores to make sure we don't exceed space available in buffers
      */
-    sem_init(&readsem, 0, input);
-    sem_init(&writesem, 0, output);
+    sem_init(&readsem, 0, in);
+    sem_init(&writesem, 0, out);
     /*
      * locking buffers to avoid race condition
      */

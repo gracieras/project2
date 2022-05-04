@@ -17,14 +17,12 @@ sem_t encryptinsem;
 sem_t encryptoutsem;
 sem_t countinsem;
 sem_t countoutsem;
-sem_t readsem;
-sem_t writesem;
+sem_t readsem; //space_inside_inputBuffer
+sem_t writesem; //space_inside_outputBuffer
 
 
 sem_t inputLock;
 sem_t outputLock;
-sem_t iBuff;
-sem_t oBuff;
 
 int inputData; //stuff_inside_InBuffer;
 int outputData; //stuff_inside_OutBuffer;
@@ -43,6 +41,7 @@ int in,out; //size of in/out buffers
 void reset_requested() 
 {
     resetting = 1;
+
     while (1)
     {
         sem_wait(&inputLock);
@@ -79,8 +78,8 @@ void reset_finished()
 //thread method to read each character in the input file as they buffer is ready to receive them,
 //calls read_input from encrypt-module.h to iterate thorugh file and places each character in the inbuffer.
 //signals that characters are ready to be counted
-void *readFile(void *param) {
-
+void *readFile(void *param) 
+{
     char c;
     reader = 0;
     while ((c = read_input()) != EOF) 
@@ -94,8 +93,8 @@ void *readFile(void *param) {
         sem_wait(&inputLock);
 
         inbuffer[reader] = c;
-        reader = (reader + 1) % in;
 
+        reader = (reader + 1) % in;
         inputData++;
         iCounter++;
 
@@ -110,6 +109,7 @@ void *readFile(void *param) {
 void *countInBuffer(void *param) 
 {
     incounter = 0;
+
     while (1) 
     {
         sem_wait(&inputLock);
@@ -122,7 +122,9 @@ void *countInBuffer(void *param)
         }
         
         count_input(inbuffer[incounter]);
+
         incounter = (incounter + 1) % in;
+        iCounter--;
         
         sem_post(&inputLock);
     }
@@ -133,28 +135,40 @@ void *countInBuffer(void *param)
 //writes encrypted character to outbuffer and signals that character is ready to be counter
 //signals to reader that encrypted character can be overwritten through readFile()
 //signals that encrypted character is ready to be counted
-void *encryptFile(void *param) {
-
+void *encryptFile(void *param) 
+{
     encryptincounter = 0;
     encryptoutcounter = 0;
-    while(1) {
-        while(resetting == 1) {
-            reset_requested();
-        }
-        sem_wait(&encryptinsem);
 
-        if(inbuffer[encryptincounter] == EOF) {
+    while(1) 
+    {
+        sem_wait(&writesem);
+        sem_wait(&inputLock);
+        sem_wait(&outputLock);
+
+        if(inbuffer[encryptincounter] == EOF) 
+        {
             outbuffer[encryptoutcounter] = EOF;
-            sem_post(&countoutsem); //potential error
+            
+            sem_post(&writesem);
+            sem_post(&inputLock);
+            sem_post(&outputLock);
             break;
         }
-        sem_wait(&encryptoutsem);
+
+        // sem_wait(&encryptoutsem);
         outbuffer[encryptoutcounter] = encrypt(inbuffer[encryptincounter]);
-        sem_post(&readsem);
-        sem_post(&countoutsem);
+
+        inputData--;
+        outputData++;
+        oCounter++;
 
         encryptincounter = (encryptincounter + 1) % in;
         encryptoutcounter = (encryptoutcounter + 1) % out;
+        
+        sem_post(&readsem);
+        sem_post(&inputLock);
+        sem_post(&outputLock);
     }
     pthread_exit(0);
 }

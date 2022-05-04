@@ -258,6 +258,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    printf("before memory allocation");
+
     inbuffer = malloc(sizeof(char) * in);
     outbuffer = malloc(sizeof(char) * out);
 

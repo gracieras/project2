@@ -82,8 +82,8 @@ void *readFile()
         sem_wait(&readsem);
         sem_wait(&inputLock);
 
-        inbuffer[reader % in] = c;
-
+        // inbuffer[reader % in] = c;
+        *(inbuffer + (reader % in)) = c;
         // *(input_buffer + (currentIndex % input_buffer_size)) = c;
 
         reader++;
@@ -99,6 +99,7 @@ void *readFile()
     isDone = true;  
     // pthread_exit(0);
 }
+
 //thread method to count each character in the inbuffer and add to total count 
 //and character counts. after character is counted it signals it is ready to be encrypted
 void *countInBuffer(void *param) 
@@ -220,11 +221,11 @@ void *writeFile(void *param)
     // pthread_exit(0);
 }
 
-void *testThread()
-{
-    printf("testing");
-    return NULL;
-}
+// void *testThread()
+// {
+//     printf("testing");
+//     return NULL;
+// }
 
 int main(int argc, char *argv[]) 
 {
@@ -295,12 +296,12 @@ int main(int argc, char *argv[])
 	pthread_t outputCounter;
 	pthread_t writer;
 
-    pthread_t test;
+    // pthread_t test;
 
-    printf("before\n");
-    pthread_create(&test, NULL, testThread, NULL);
-    pthread_join(test, NULL);
-    printf("after\n");
+    // printf("before\n");
+    // pthread_create(&test, NULL, testThread, NULL);
+    // pthread_join(test, NULL);
+    // printf("after\n");
 
     printf("declare pthread success\n");
 

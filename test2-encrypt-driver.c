@@ -102,7 +102,6 @@ void reset_finished() {
 void *readFile() 
 {
     char c;
-<<<<<<< Updated upstream
     reader = 0;
     while ((c = read_input()) != EOF) 
     {
@@ -124,25 +123,6 @@ void *readFile()
         inputData++;
         iCounter++;
 
-=======
-    while((c = read_input()) != EOF){
-        //Checks if a reset has occurred
-        if(reset_flag == 1)
-            sem_wait(&reset_sem);
-        //checks if there is space inside input Buffer
-        sem_wait(&readsem);
-        //locks the input buffer
-        sem_wait(&inputLock);
-        //Stores the read character at the read index in the input buffer
-        *(inbuffer + (currentIndex % in)) = c;
-        //increment the read index
-        currentIndex++;
-        //increase the size of the input buffer
-        inputData++;
-        //increments the number of character ready to be counted
-        iCounter++;
-        //release lock on input buffer
->>>>>>> Stashed changes
         sem_post(&inputLock);
     }
 
@@ -153,7 +133,6 @@ void *readFile()
     // pthread_exit(0);
 }
 
-<<<<<<< Updated upstream
 //thread method to count each character in the inbuffer and add to total count 
 //and character counts. after character is counted it signals it is ready to be encrypted
 void *countInBuffer() 
@@ -183,40 +162,11 @@ void *countInBuffer()
             incounter++;
             iCounter--;
 
-=======
-/*
-The input counter thread simply counts occurrences of each letter in the input file by looking at 
-each character in the input buffer
-*/
-void *inCounterThread(){
-    //The counting index in the input buffer
-    int currentIndex = 0;
-    while(1){
-        //grabs the lock on input buffer
-        sem_wait(&inputLock);
-        //Checks if there are items ready to counted
-        if(iCounter == 0){
-            if(read_done_flag == 1){
-                sem_post(&inputLock);
-                break;
-            }
-            sem_post(&inputLock);
-        }
-        else {
-            //Check of the character to be counted is not the ending character
-            count_input(*(inbuffer + (currentIndex % in)));
-            //increments the counting index
-            currentIndex++;
-            //decreases the items to be counted 
-            iCounter--;
-            //releases the lock on the input buffer
->>>>>>> Stashed changes
             sem_post(&inputLock);
         }
     }
 }
 
-<<<<<<< Updated upstream
 //thread method that encrypts characters as they become available in the inbuffer
 //writes encrypted character to outbuffer and signals that character is ready to be counter
 //signals to reader that encrypted character can be overwritten through readFile()
@@ -262,56 +212,6 @@ void *encryptFile()
             encryptoutcounter++;
             
             sem_post(&readsem);
-=======
-/*
-The encryption thread consumes one character at a time from the input buffer, encrypts it, and 
-places it in the output buffer. It must do so by calling the provided function encrypt().
-*/
-void *encryptThread(){
-    //The index at which the input biffer can read
-    int currentIndex_in = 0;
-    //The index at which the output buffer can write
-    int currentIndex_out = 0;
-    while(1){
-        //checks if there is space in the output buffer
-        sem_wait(&writesem);
-        //lock both buffers
-        sem_wait(&inputLock);
-        sem_wait(&outputLock);
-        if(inputData == 0){
-            if(read_done_flag == 1){
-                sem_post(&inputLock);
-                sem_post(&outputLock);
-                sem_post(&writesem);
-                break;
-            }
-            sem_post(&inputLock);
-            sem_post(&outputLock);
-            sem_post(&writesem);
-        }
-        else {
-            //checks if the character ready to be dequeue is not the ending character
-            /*if (*(inbuffer + (currentIndex_in % in)) != EOF) {
-                *(outbuffer + (currentIndex_out % out)) = encrypt(*(inbuffer + (currentIndex_in % in)));
-            } else
-                *(outbuffer + (currentIndex_out % out)) = *(inbuffer + (currentIndex_in % in));
-            */
-            *(outbuffer + (currentIndex_out % out)) = encrypt(*(inbuffer + (currentIndex_in % in)));
-            
-            //Incrementes Read index in the input buffer
-            currentIndex_in++;
-            //Increment the Write index in the output buffer
-            currentIndex_out++;
-
-            //indicate removal of things in input buffer
-            inputData--;
-            //indicate stuff inside output buffer
-            outputData++;
-            oCounter++;
-            //signal freed space in input buffer
-            sem_post(&readsem);
-            //unlock buffers
->>>>>>> Stashed changes
             sem_post(&inputLock);
             sem_post(&outputLock);
         }
@@ -319,7 +219,6 @@ void *encryptThread(){
     }
     // pthread_exit(0);
 }
-<<<<<<< Updated upstream
 
 //method thread to count total and count each character in the outbuffer
 //once counted, signals that the character is ready to be written to output file
@@ -348,42 +247,12 @@ void *countOutBuffer()
             outcounter++;
             oCounter--;
 
-=======
-/*
-The output counter thread simply counts occurrences of each letter in the output file by looking 
-at each character in the output buffer. It must call the provided function count_output(). 
-*/
-void *outCounterThread(){
-    //The counting index of the output buffer
-    int currentIndex = 0;
-    while(1){
-        //lock output buffer
-        sem_wait(&outputLock);
-        //Checks if there are items ready to counted
-        if(oCounter == 0){
-            if(read_done_flag == 1){
-                sem_post(&outputLock);
-                break;
-            }
-            sem_post(&outputLock);
-        }
-        else {
-            //Check of the character to be counted is not the ending character
-
-            count_output(*(outbuffer + (currentIndex % out)));
-            //increments the counting index
-            currentIndex++;
-            //decreases the items to be counted 
-            oCounter--;
-            //unlock output buffer
->>>>>>> Stashed changes
             sem_post(&outputLock);
         }
         
     }
     // pthread_exit(0);
 }
-<<<<<<< Updated upstream
 
 //method thread to write character to output file
 //once character is written, signals encrypt thread that the output buffer is ready to 
@@ -414,35 +283,6 @@ void *writeFile()
             outputData--;
 
             sem_post(&writesem);
-=======
-/*
-The writer thread is responsible for writing the encrypted characters in the output buffer to the 
-output file. It must do so by calling the provided function write_output(). 
-*/
-void *writeThread(){
-    //The index at which the output buffer can read
-    int currentIndex = 0;
-    while(1){
-        //lock output buffer
-        sem_wait(&outputLock);
-        //Checks if the output buffer is empty
-        if(outputData == 0){
-            if(read_done_flag == 1){
-                sem_post(&outputLock);
-                break;
-            }
-            sem_post(&outputLock);
-        }
-        else {
-            write_output(*(outbuffer + (currentIndex % out)));
-            //Increments the count index
-            currentIndex++;
-            //Decreases the number of items to be counted
-            outputData--;
-            //indicate space available in output buffer
-            sem_post(&writesem);
-            //release lock on output buffer
->>>>>>> Stashed changes
             sem_post(&outputLock);
         }
     }

@@ -220,6 +220,12 @@ void *writeFile(void *param)
     // pthread_exit(0);
 }
 
+void *testThread()
+{
+    printf("testing");
+    return NULL;
+}
+
 int main(int argc, char *argv[]) 
 {
     char *finput, *foutput, *flog;
@@ -295,7 +301,7 @@ int main(int argc, char *argv[])
     pthread_create(&test, NULL, testThread, NULL);
     pthread_join(test, NULL);
     printf("after\n");
-    
+
     printf("declare pthread success\n");
 
     in = insize;
@@ -360,8 +366,3 @@ int main(int argc, char *argv[])
     free(outbuffer);
 }
 
-void *testThread()
-{
-    printf("testing");
-    return NULL;
-}

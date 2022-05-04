@@ -70,24 +70,19 @@ void reset_finished()
 //signals that characters are ready to be counted
 void *readFile() 
 {
-    printf("in readfile\n");
     char c;
     reader = 0;
     while ((c = read_input()) != EOF) 
     {
-        printf("before resetting check\n");
         if(resetting == 1) 
         {
             sem_wait(&reset);
         }
-        printf("after resetting check\n");
 
         sem_wait(&readsem);
 
-        printf("after readsem wait\n");
-
         sem_wait(&inputLock);
-        printf("after inputlock\n");
+
         // inbuffer[reader % in] = c;
         int tempmod = reader % in;
         *(inbuffer + tempmod) = c;
@@ -159,9 +154,10 @@ void *encryptFile()
             break;
         }
 
-        int tempmodin = encryptincounter % in;
-        int tempmodout = encryptoutcounter % out;
-        *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
+        // int tempmodin = encryptincounter % in;
+        // int tempmodout = encryptoutcounter % out;
+        // *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
+        outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
 
         inputData--;
         outputData++;
@@ -223,7 +219,7 @@ void *writeFile()
 
         int tempmod = writer % out;
         write_output(*(outbuffer + tempmod));
-        
+
         writer++;
         outputData--;
 

@@ -217,8 +217,9 @@ void *writeFile()
             break;
         }
 
-        int tempmod = writer % out;
-        write_output(*(outbuffer + tempmod));
+        // int tempmod = writer % out;
+        // write_output(*(outbuffer + tempmod));
+        write_output(outbuffer[writer % out]);
 
         writer++;
         outputData--;

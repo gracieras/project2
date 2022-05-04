@@ -1,10 +1,19 @@
+/*
+ * Grace Rasmussen - ger
+ * Noah Tang - ntang1
+ */
+
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <stdlib.h>
 #include "encrypt-module.h"
-
-//Authors - Felipe Bautista Salamanca and Emmanuel Paz
+#include <fcntl.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <time.h>
+#include <stdlib.h>
 
 /*
  *Input Buffer Data Structure
@@ -245,17 +254,31 @@ void *writeThread(){
 
 int main(int argc, char *argv[]) {
     int input, output;
-    if(argc < 4){
-        printf("arguments should be: inputfile outputfile logfile\n");
-        return 1;
+    if(argc != 4){
+        printf("please include input file name, output file name, and log file name");
+        exit(0);
     }
 
     init(argv[1], argv[2], argv[3]);
 
-    printf("input buffer size? ");
-    scanf(" %d", &input);
-    printf("output buffer size? ");
-    scanf(" %d", &output);
+    //prompt user for input buffer size
+    printf("What input buffer size to use? ");
+    scanf("%d", &input);
+    if (input <= 1)
+    {
+        printf("input buffer needs to be greater than 1");
+        exit(0);
+    }
+
+    //prompt user for output buffer size
+    printf("What output buffer size to use? ");
+    scanf("%d", &output);
+    if (output <= 1)
+    {
+        printf("output buffer needs to be greater than 1");
+        exit(0);
+    }
+
     //flags
     read_done_flag = 0;
     reset_flag = 0;
@@ -276,19 +299,11 @@ int main(int argc, char *argv[]) {
     //init buffers
     input_buffer = (char*) malloc(input * sizeof(char));
     output_buffer = (char*) malloc(input * sizeof(char));
-    /*
-     * semaphores to make sure we don't exceed space available in buffers
-     */
+
     sem_init(&space_inside_inputBuffer, 0, input);
     sem_init(&space_inside_outputBuffer, 0, output);
-    /*
-     * locking buffers to avoid race condition
-     */
     sem_init(&lock_InputBuffer_sem, 0, 1);
     sem_init(&lock_OutputBuffer_sem, 0 , 1);
-    /*
-     * if a reset is requested then reading thread should wait
-     */
     sem_init(&reset_sem, 0, 0);
 
     pthread_create(&readT, NULL, inputThread, NULL);

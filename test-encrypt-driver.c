@@ -70,18 +70,24 @@ void reset_finished()
 //signals that characters are ready to be counted
 void *readFile() 
 {
+    printf("in readfile");
     char c;
     reader = 0;
     while ((c = read_input()) != EOF) 
     {
+        printf("before resetting check");
         if(resetting == 1) 
         {
             sem_wait(&reset);
         }
+        printf("after resetting check");
 
         sem_wait(&readsem);
-        sem_wait(&inputLock);
 
+        printf("after readsem wait");
+
+        sem_wait(&inputLock);
+        printf("after inputlock");
         // inbuffer[reader % in] = c;
         *(inbuffer + (reader % in)) = c;
         // *(input_buffer + (currentIndex % input_buffer_size)) = c;

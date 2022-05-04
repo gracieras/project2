@@ -208,6 +208,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    printf("after inputs");
+
     //allocate space for inbuffer and outbuffer
     inbuffer = malloc(sizeof(int) * in);
     outbuffer = malloc(sizeof(int) * out);

@@ -33,11 +33,6 @@ int outputData;
 int outCounter;
 int resetting;
 
-/*
-When this method get called by the random reset Thread, it stop the reader thread from reading any more input and make 
-sure it is safe to reset after all the items in the buffer have been counted and process
-*/
-
 void reset_requested() {
     //stops the Reader
     resetting = 1;
@@ -57,20 +52,16 @@ void reset_requested() {
     //Logs the current input and output counts
     log_counts();
 }
-/*
-Resumes the reader thread
-*/
+
 void reset_finished() {
     //signals the reader to continue
     sem_post(&reset);
     resetting = 0;
 }
 
-/*
-The reader thread is responsible for reading from the input file one character at a time and 
-placing the characters in the input buffer. It must do so by calling the provided function 
-read_input(). Each buffer item corresponds to a character.
-*/
+//thread method to read each character in the input file as they buffer is ready to receive them,
+//calls read_input from encrypt-module.h to iterate thorugh file and places each character in the inbuffer.
+//signals that characters are ready to be counted
 void *readFile(){
     //The index at which the input buffer can write
     int currentIndex = 0;
@@ -97,10 +88,8 @@ void *readFile(){
     isDone = true;
 }
 
-/*
-The input counter thread simply counts occurrences of each letter in the input file by looking at 
-each character in the input buffer
-*/
+//thread method to count each character in the inbuffer and add to total count 
+//and character counts. after character is counted it signals it is ready to be encrypted
 void *countInBuffer(){
     //The counting index in the input buffer
     int currentIndex = 0;
@@ -128,10 +117,10 @@ void *countInBuffer(){
     }
 }
 
-/*
-The encryption thread consumes one character at a time from the input buffer, encrypts it, and 
-places it in the output buffer. It must do so by calling the provided function encrypt().
-*/
+//thread method that encrypts characters as they become available in the inbuffer
+//writes encrypted character to outbuffer and signals that character is ready to be counter
+//signals to reader that encrypted character can be overwritten through readFile()
+//signals that encrypted character is ready to be counted
 void *encryptFile(){
     //The index at which the input biffer can read
     int currentIndex_in = 0;
@@ -181,10 +170,9 @@ void *encryptFile(){
         }
     }
 }
-/*
-The output counter thread simply counts occurrences of each letter in the output file by looking 
-at each character in the output buffer. It must call the provided function count_output(). 
-*/
+
+//method thread to count total and count each character in the outbuffer
+//once counted, signals that the character is ready to be written to output file
 void *countOutBuffer(){
     //The counting index of the output buffer
     int currentIndex = 0;
@@ -212,10 +200,10 @@ void *countOutBuffer(){
         }
     }
 }
-/*
-The writer thread is responsible for writing the encrypted characters in the output buffer to the 
-output file. It must do so by calling the provided function write_output(). 
-*/
+
+//method thread to write character to output file
+//once character is written, signals encrypt thread that the output buffer is ready to 
+//receive new characters
 void *writeFile(){
     //The index at which the output buffer can read
     int currentIndex = 0;
@@ -301,24 +289,24 @@ int main(int argc, char *argv[]) {
     sem_init(&reset, 0, 0);
 
     //declare threads
-    pthread_t readT;
-    pthread_t input_countT;
-    pthread_t encryptT;
-    pthread_t output_countT;
-    pthread_t writeT;
+    pthread_t reader;
+    pthread_t inputCounter;
+    pthread_t encryptor;
+    pthread_t outputCounter;
+    pthread_t writer;
 
     //creating threads
-    pthread_create(&readT, NULL, readFile, NULL);
-    pthread_create(&input_countT, NULL, countInBuffer, NULL);
-    pthread_create(&encryptT, NULL, encryptFile, NULL);
-    pthread_create(&output_countT, NULL, countOutBuffer, NULL);
-    pthread_create(&writeT, NULL, writeFile, NULL);
+    pthread_create(&reader, NULL, readFile, NULL);
+    pthread_create(&inputCounter, NULL, countInBuffer, NULL);
+    pthread_create(&encryptor, NULL, encryptFile, NULL);
+    pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
+    pthread_create(&writer, NULL, writeFile, NULL);
 
-    pthread_join(readT, NULL);
-    pthread_join(input_countT, NULL);
-    pthread_join(encryptT, NULL);
-    pthread_join(output_countT, NULL);
-    pthread_join(writeT, NULL);
+    pthread_join(reader, NULL);
+    pthread_join(inputCounter, NULL);
+    pthread_join(encryptor, NULL);
+    pthread_join(outputCounter, NULL);
+    pthread_join(writer, NULL);
 
     printf("End of file reached.\n");
     log_counts();

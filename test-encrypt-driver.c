@@ -88,8 +88,8 @@ void *readFile()
 
         sem_wait(&inputLock);
         printf("after inputlock\n");
-        // inbuffer[reader % in] = c;
-        *(inbuffer + (reader % in)) = c;
+        inbuffer[reader % in] = c;
+        // *(inbuffer + (reader % in)) = c;
         // *(input_buffer + (currentIndex % input_buffer_size)) = c;
 
         reader++;

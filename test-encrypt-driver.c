@@ -89,7 +89,8 @@ void *readFile()
         sem_wait(&inputLock);
         printf("after inputlock\n");
         // inbuffer[reader % in] = c;
-        *(inbuffer + (reader % in)) = c;
+        int tempmod = reader % in;
+        *(inbuffer + tempmod) = c;
         // *(input_buffer + (currentIndex % input_buffer_size)) = c;
 
         reader++;
@@ -108,7 +109,7 @@ void *readFile()
 
 //thread method to count each character in the inbuffer and add to total count 
 //and character counts. after character is counted it signals it is ready to be encrypted
-void *countInBuffer(void *param) 
+void *countInBuffer() 
 {
     incounter = 0;
 
@@ -122,7 +123,9 @@ void *countInBuffer(void *param)
             break;
         }
         
-        count_input(inbuffer[incounter % in]);
+        // count_input(inbuffer[incounter % in]);
+        int tempmod = incounter % in;
+        count_input(*(inbuffer + tempmod));
 
         incounter++;
         iCounter--;
@@ -136,7 +139,7 @@ void *countInBuffer(void *param)
 //writes encrypted character to outbuffer and signals that character is ready to be counter
 //signals to reader that encrypted character can be overwritten through readFile()
 //signals that encrypted character is ready to be counted
-void *encryptFile(void *param) 
+void *encryptFile() 
 {
     encryptincounter = 0;
     encryptoutcounter = 0;
@@ -156,8 +159,9 @@ void *encryptFile(void *param)
             break;
         }
 
-        // sem_wait(&encryptoutsem);
-        outbuffer[encryptoutcounter % out] = encrypt(inbuffer[encryptincounter % in]);
+        int tempmodin = encryptincounter % in;
+        int tempmodout = encryptoutcounter % out;
+        *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
 
         inputData--;
         outputData++;
@@ -175,7 +179,7 @@ void *encryptFile(void *param)
 
 //method thread to count total and count each character in the outbuffer
 //once counted, signals that the character is ready to be written to output file
-void *countOutBuffer(void *param) 
+void *countOutBuffer() 
 {
     outcounter = 0;
 
@@ -189,8 +193,9 @@ void *countOutBuffer(void *param)
             break;
         }
 
-        count_output(outbuffer[outcounter % out]);
-        
+        int tempmod = outcounter % out;
+        count_output(*(outbuffer + tempmod));
+
         outcounter++;
         oCounter--;
 
@@ -202,7 +207,7 @@ void *countOutBuffer(void *param)
 //method thread to write character to output file
 //once character is written, signals encrypt thread that the output buffer is ready to 
 //receive new characters
-void *writeFile(void *param) 
+void *writeFile() 
 {
     writer = 0;
 
@@ -216,15 +221,15 @@ void *writeFile(void *param)
             break;
         }
 
-        write_output(outbuffer[writer % out]);
-
+        int tempmod = writer % out;
+        write_output(*(outbuffer + tempmod));
+        
         writer++;
         outputData--;
 
         sem_post(&writesem);
         sem_post(&outputLock);
     }
-    // pthread_exit(0);
 }
 
 // void *testThread()
@@ -311,7 +316,7 @@ int main(int argc, char *argv[])
     in = insize;
     out = outsize;
 
-    printf("set buffer size success");
+    printf("set buffer size success\n");
 
     inbuffer = (char*) malloc(sizeof(char) * insize);
     outbuffer = (char*) malloc(sizeof(char) * outsize);

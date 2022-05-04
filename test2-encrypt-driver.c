@@ -15,6 +15,28 @@
 #include <time.h>
 #include <stdlib.h>
 
+char *inbuffer;     //char array buffer to hold input
+char *outbuffer;    //char array buffer to hold output
+
+sem_t readsem; //space_inside_inputBuffer
+sem_t writesem; //space_inside_outputBuffer
+sem_t inputLock;
+sem_t outputLock;
+sem_t reset;
+
+int inputData; //stuff_inside_InBuffer;
+int outputData; //stuff_inside_OutBuffer;
+int iCounter; //chars_to_count_input;
+int oCounter; //chars_to_count_output;
+int resetting;
+
+bool isDone;
+
+//counters for read/write and counters for buffers
+int reader, incounter, encryptincounter, encryptoutcounter, outcounter, writer;
+
+int in,out; //size of in/out buffers
+
 /*
  *Input Buffer Data Structure
  */

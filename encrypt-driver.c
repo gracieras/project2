@@ -266,9 +266,9 @@ int main(int argc, char *argv[])
 	// 	write_output(c); 
 	// } 
 	
-	log_counts();
     printf("End of file reached."); 
     printf("\n");
+    log_counts();
 
     //freeing memory
 	free(inbuffer);

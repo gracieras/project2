@@ -241,9 +241,9 @@ int main(int argc, char *argv[])
 	init(finput, foutput, flog);
 
     //prompt user for input buffer size
-    printf("please give input buffer size.\n");
+    printf("please give input buffer size. ");
     int insize;
-    scanf("%d", insize);
+    scanf("%d", &insize);
     if (in <= 1)
     {
         printf("input buffer needs to be greater than 1");
@@ -251,9 +251,9 @@ int main(int argc, char *argv[])
     }
 
     //prompt user for output buffer size
-    printf("please give output buffer size.\n");
+    printf("please give output buffer size. ");
     int outsize;
-    scanf("%d", outsize);
+    scanf("%d", &outsize);
     if (out <= 1)
     {
         printf("output buffer needs to be greater than 1");

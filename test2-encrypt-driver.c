@@ -113,6 +113,7 @@ void *countInBuffer()
         {
             if(isDone)
             {
+                sem_post(&inputLock);
                 break;
             }
             sem_post(&inputLock);
@@ -129,7 +130,7 @@ void *countInBuffer()
             sem_post(&inputLock);
         }
     }
-    sem_post(&inputLock);
+    
 }
 
 //thread method that encrypts characters as they become available in the inbuffer
@@ -151,6 +152,9 @@ void *encryptFile()
         {
             if(isDone)
             {
+                sem_post(&writesem);
+                sem_post(&inputLock);
+                sem_post(&outputLock);
                 break;
             }
             sem_post(&writesem);
@@ -182,9 +186,7 @@ void *encryptFile()
             sem_post(&outputLock);
         }
     }
-    sem_post(&writesem);
-    sem_post(&inputLock);
-    sem_post(&outputLock);
+    
 }
 
 //method thread to count total and count each character in the outbuffer
@@ -200,6 +202,7 @@ void *countOutBuffer()
         {
             if(isDone)
             {
+                sem_post(&outputLock);
                 break;
             }
             sem_post(&outputLock);
@@ -216,7 +219,7 @@ void *countOutBuffer()
             sem_post(&outputLock);
         }
     }
-    sem_post(&outputLock);
+    
 }
 
 //method thread to write character to output file
@@ -234,6 +237,7 @@ void *writeFile()
         {
             if(isDone)
             {
+                sem_post(&outputLock);
                 break;
             }
             sem_post(&outputLock);
@@ -251,7 +255,7 @@ void *writeFile()
             sem_post(&outputLock);
         }
     }
-    sem_post(&outputLock);
+    
 }
 
 int main(int argc, char *argv[]) 

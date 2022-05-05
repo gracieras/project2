@@ -18,12 +18,14 @@
 char *inbuffer;     //char array buffer to hold input
 char *outbuffer;    //char array buffer to hold output
 
+//declare semaphores
 sem_t readsem;
 sem_t writesem;
 sem_t inputLock;
 sem_t outputLock;
 sem_t reset;
 
+//declare threads
 pthread_t reader;
 pthread_t inputCounter;
 pthread_t encryptor;

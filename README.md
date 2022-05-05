@@ -1,3 +1,6 @@
-"# project2" 
+COMS 352- Project 2
+
+Grace Rasmussen - ger
+Noah Tang - ntang1
+
 Documentation in encrypt-driver.c
-ntang1 and ger

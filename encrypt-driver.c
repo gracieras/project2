@@ -4,6 +4,8 @@
  * 
  * This class has been implemented as a multi-threaded text file encryptor. 
  * We used the 5 threads (reader, inputCounter, encryptor, outputCounter, writer) to do so.
+ * It will take an input txt file and then convert it to an output txt file.
+ * 
  */
 
 #include <stdio.h>

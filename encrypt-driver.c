@@ -41,6 +41,7 @@ pthread_t writer;
 int in,out; //size of in/out buffers
 bool isDone;
 
+//counters
 int inputData;
 int outputData;
 int inCounter;

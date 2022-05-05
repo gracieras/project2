@@ -144,22 +144,24 @@ void *encryptFile()
 
     while(1)
     {
+        sem_wait(&writesem);
         sem_wait(&inputLock);
         sem_wait(&outputLock);
-        sem_wait(&writesem);
+        
         
         if(inputData == 0)
         {
             if(isDone)
             {
-                sem_post(&writesem);
                 sem_post(&inputLock);
                 sem_post(&outputLock);
+                sem_post(&writesem);
                 break;
             }
-            sem_post(&writesem);
+            
             sem_post(&inputLock);
             sem_post(&outputLock);
+            sem_post(&writesem);
         }
         else 
         {

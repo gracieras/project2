@@ -47,24 +47,32 @@ int resetting;
 //reset started
 void reset_requested() 
 {
-    //stops the Reader
+    //stops reading
     resetting = 1;
 
     while (1)
     {
+        //block input
         sem_wait(&inputLock);
+        //block output
         sem_wait(&outputLock);
 
+        //breaks out of loop
         if(inputData == 0 && outputData == 0 && inCounter == 0 && outCounter == 0) 
         {
             break;
         }
 
+        //release input
         sem_post(&inputLock);
+
+        //release output
         sem_post(&outputLock);
     }
 
+    //release input
     sem_post(&inputLock);
+    //release output
     sem_post(&outputLock);
 
     log_counts();
@@ -75,6 +83,7 @@ void reset_finished()
 {
     sem_post(&reset);
 
+    //lets read continue
     resetting = 0;
 }
 
@@ -86,13 +95,16 @@ void *readFile()
     char c;
     int reader = 0;
 
+    //reads through the file
     while((c = read_input()) != EOF)
     {
+        //waits for reset to finish
         if(resetting == 1)
         {
             sem_wait(&reset);
         }
 
+        //blocks input/readsem
         sem_wait(&readsem);
         sem_wait(&inputLock);
 
@@ -103,8 +115,10 @@ void *readFile()
         inputData++;
         inCounter++;
         
+        //release input
         sem_post(&inputLock);
     }
+    //signal EOF
     isDone = true;
 }
 
@@ -116,15 +130,18 @@ void *countInBuffer()
 
     while(1)
     {
+        //block input
         sem_wait(&inputLock);
         
         if(inCounter == 0)
         {
+            //breaks out loop
             if(isDone)
             {
                 break;
             }
 
+            //release input
             sem_post(&inputLock);
         }
         else 
@@ -135,9 +152,11 @@ void *countInBuffer()
             countincounter++;
             inCounter--;
             
+            //release input
             sem_post(&inputLock);
         }
     }
+    //release input
     sem_post(&inputLock);
 }
 
@@ -152,17 +171,20 @@ void *encryptFile()
 
     while(1)
     {
+        //block write/input/output while encrypting
         sem_wait(&writesem);
         sem_wait(&inputLock);
         sem_wait(&outputLock);
         
         if(inputData == 0)
         {
+            //breaks loop
             if(isDone)
             {
                 break;
             }
             
+            //release
             sem_post(&inputLock);
             sem_post(&outputLock);
             sem_post(&writesem);
@@ -185,11 +207,13 @@ void *encryptFile()
             outputData++;
             outCounter++;
             
+            //release
             sem_post(&readsem);
             sem_post(&inputLock);
             sem_post(&outputLock);
         }
     }
+    //release
     sem_post(&inputLock);
     sem_post(&outputLock);
     sem_post(&writesem);
@@ -202,15 +226,17 @@ void *countOutBuffer()
     int countoutcounter = 0;
     while(1)
     {
+        //block output
         sem_wait(&outputLock);
         
         if(outCounter == 0)
         {
+            //break loop
             if(isDone)
             {
                 break;
             }
-            
+            //release output
             sem_post(&outputLock);
         }
         else 
@@ -221,9 +247,11 @@ void *countOutBuffer()
             countoutcounter++;
             outCounter--;
             
+            //release output
             sem_post(&outputLock);
         }
     }
+    //release output
     sem_post(&outputLock);
 }
 
@@ -236,15 +264,17 @@ void *writeFile()
 
     while(1)
     {
+        //block output
         sem_wait(&outputLock);
         
         if(outputData == 0)
         {
+            //break loop
             if(isDone)
             {
                 break;
             }
-
+            //release
             sem_post(&outputLock);
         }
         else 
@@ -255,10 +285,12 @@ void *writeFile()
             writer++;
             outputData--;
             
+            //release
             sem_post(&writesem);
             sem_post(&outputLock);
         }
     }
+    //release
     sem_post(&outputLock);
 }
 

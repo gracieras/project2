@@ -260,6 +260,25 @@ void *writeFile()
     sem_post(&outputLock);
 }
 
+void initvalues()
+{
+    isDone = false;
+    resetting = 0;
+    inputData = 0;
+    outputData = 0;
+    inCounter = 0;
+    outCounter = 0;
+}
+
+void initsem()
+{
+    sem_init(&readsem, 0, in);
+    sem_init(&writesem, 0, out);
+    sem_init(&inputLock, 0, 1);
+    sem_init(&outputLock, 0 , 1);
+    sem_init(&reset, 0, 0);
+}
+
 int main(int argc, char *argv[]) 
 {
     char *finput, *foutput, *flog;
@@ -306,12 +325,7 @@ int main(int argc, char *argv[])
 
     // printf("allocate memory success\n");
 
-    isDone = false;
-    resetting = 0;
-    inputData = 0;
-    outputData = 0;
-    inCounter = 0;
-    outCounter = 0;
+    initvalues();
 
     // printf("initialize variables success\n");
 
@@ -325,11 +339,7 @@ int main(int argc, char *argv[])
     // printf("declare pthread success\n");
     
     //initialize semaphores
-    sem_init(&readsem, 0, in);
-    sem_init(&writesem, 0, out);
-    sem_init(&inputLock, 0, 1);
-    sem_init(&outputLock, 0 , 1);
-    sem_init(&reset, 0, 0);
+    initsem();
 
     // printf("initialize sem success\n");
 

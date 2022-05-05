@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    // printf("set buffer size success\n");
+    // printf("set buffer size success\n"); //testing purposes
 
     //allocate space for inbuffer and outbuffer
     inbuffer = (char*) malloc(in * sizeof(char));
@@ -350,32 +350,16 @@ int main(int argc, char *argv[])
     // printf("allocate memory success\n");
 
     initvalues();
-
-    // printf("initialize variables success\n");
-
-    //declare threads
-    // pthread_t reader;
-    // pthread_t inputCounter;
-    // pthread_t encryptor;
-    // pthread_t outputCounter;
-    // pthread_t writer;
-
-    // printf("declare pthread success\n");
+    // printf("initialize variables success\n"); //testing purposes
     
-    //initialize semaphores
     initsem();
+    // printf("initialize sem success\n"); //testing purposes
 
-    // printf("initialize sem success\n");
-
-    //creating threads
     createpthread();
+    // printf("create pthread success\n"); //testing purposes
 
-    // printf("create pthread success\n");
-
-    //adding threads
     pthreadjoin();
-
-    // printf("pthread join success\n");
+    // printf("pthread join success\n"); //testing purposes
 
     //outputing data
     printf("End of file reached.\n"); 

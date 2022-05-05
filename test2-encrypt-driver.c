@@ -352,7 +352,8 @@ int main(int argc, char *argv[])
     // printf("pthread join success\n");
 
     //outputing data
-    log_counts();
+    printf("End of file reached.\n"); 
+	log_counts();
 
     //freeing memory
     free(inbuffer);

@@ -24,6 +24,12 @@ sem_t inputLock;
 sem_t outputLock;
 sem_t reset;
 
+pthread_t reader;
+pthread_t inputCounter;
+pthread_t encryptor;
+pthread_t outputCounter;
+pthread_t writer;
+
 int in,out; //size of in/out buffers
 bool isDone;
 
@@ -279,6 +285,24 @@ void initsem()
     sem_init(&reset, 0, 0);
 }
 
+void createpthread()
+{
+    pthread_create(&reader, NULL, readFile, NULL);
+    pthread_create(&inputCounter, NULL, countInBuffer, NULL);
+    pthread_create(&encryptor, NULL, encryptFile, NULL);
+    pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
+    pthread_create(&writer, NULL, writeFile, NULL);
+}
+
+void pthreadjoin()
+{
+    pthread_join(reader, NULL);
+    pthread_join(inputCounter, NULL);
+    pthread_join(encryptor, NULL);
+    pthread_join(outputCounter, NULL);
+    pthread_join(writer, NULL);
+}
+
 int main(int argc, char *argv[]) 
 {
     char *finput, *foutput, *flog;
@@ -330,11 +354,11 @@ int main(int argc, char *argv[])
     // printf("initialize variables success\n");
 
     //declare threads
-    pthread_t reader;
-    pthread_t inputCounter;
-    pthread_t encryptor;
-    pthread_t outputCounter;
-    pthread_t writer;
+    // pthread_t reader;
+    // pthread_t inputCounter;
+    // pthread_t encryptor;
+    // pthread_t outputCounter;
+    // pthread_t writer;
 
     // printf("declare pthread success\n");
     
@@ -344,20 +368,12 @@ int main(int argc, char *argv[])
     // printf("initialize sem success\n");
 
     //creating threads
-    pthread_create(&reader, NULL, readFile, NULL);
-    pthread_create(&inputCounter, NULL, countInBuffer, NULL);
-    pthread_create(&encryptor, NULL, encryptFile, NULL);
-    pthread_create(&outputCounter, NULL, countOutBuffer, NULL);
-    pthread_create(&writer, NULL, writeFile, NULL);
+    createpthread();
 
     // printf("create pthread success\n");
 
     //adding threads
-    pthread_join(reader, NULL);
-    pthread_join(inputCounter, NULL);
-    pthread_join(encryptor, NULL);
-    pthread_join(outputCounter, NULL);
-    pthread_join(writer, NULL);
+    pthreadjoin();
 
     // printf("pthread join success\n");
 

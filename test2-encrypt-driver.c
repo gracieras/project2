@@ -92,9 +92,7 @@ void *readFile()
         sem_wait(&inputLock);
 
         int tempmod = reader % in;
-
         *(inbuffer + tempmod) = c;
-        // *(inbuffer + (reader % in)) = c;
 
         reader++;
         inputData++;
@@ -119,17 +117,16 @@ void *countInBuffer()
         {
             if(isDone)
             {
-                
                 break;
             }
+
             sem_post(&inputLock);
         }
         else 
         {
             int tempmod = countincounter % in;
             count_input(*(inbuffer + tempmod));
-            // count_input(*(inbuffer + (countincounter % in)));
-            
+
             countincounter++;
             inCounter--;
             
@@ -154,12 +151,10 @@ void *encryptFile()
         sem_wait(&inputLock);
         sem_wait(&outputLock);
         
-        
         if(inputData == 0)
         {
             if(isDone)
             {
-                
                 break;
             }
             
@@ -175,11 +170,9 @@ void *encryptFile()
             } else
                 *(outbuffer + (currentIndex_out % out)) = *(inbuffer + (currentIndex_in % in));
             */
-
             int tempmodin = encryptincounter % in;
             int tempmodout = encryptoutcounter % out;
             *(outbuffer + tempmodout) = encrypt(*(inbuffer + tempmodin));
-            // *(outbuffer + (currentIndex_out % out)) = encrypt(*(inbuffer + (currentIndex_in % in)));
             
             encryptincounter++;
             encryptoutcounter++;
@@ -210,16 +203,15 @@ void *countOutBuffer()
         {
             if(isDone)
             {
-                
                 break;
             }
+            
             sem_post(&outputLock);
         }
         else 
         {
             int tempmod = countoutcounter % out;
             count_output(*(outbuffer + tempmod));
-            // count_output(*(outbuffer + (countoutcounter % out)));
             
             countoutcounter++;
             outCounter--;
@@ -245,14 +237,13 @@ void *writeFile()
         {
             if(isDone)
             {
-                
                 break;
             }
+
             sem_post(&outputLock);
         }
         else 
         {
-            // write_output(*(outbuffer + (currentIndex % out)));
             int tempmod = writer % out;
             write_output(*(outbuffer + tempmod));
 

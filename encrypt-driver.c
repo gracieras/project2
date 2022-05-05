@@ -1,6 +1,9 @@
 /*
  * Grace Rasmussen - ger
  * Noah Tang - ntang1
+ * 
+ * This class has been implemented as a multi-threaded text file encryptor. 
+ * We used the 5 threads (reader, inputCounter, encryptor, outputCounter, writer) to do so.
  */
 
 #include <stdio.h>
